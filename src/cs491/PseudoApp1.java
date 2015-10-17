@@ -68,7 +68,8 @@ private void init()
 public void sendSetRequest(boolean _security) {
 	try{
 	DOFBoolean value = new DOFBoolean(_security);
-	providerObject.set(EndToEndSecurityInterface.PROPERTY_SECURITY_ACTIVE, booleanValue, TIMEOUT); //REQUESTOR's object, passes TRUE
+	//REQUESTOR's object, passes TRUE
+	providerObject.set(EndToEndSecurityInterface.PROPERTY_SECURITY_ACTIVE, booleanValue, TIMEOUT); 
 	return true;
 	catch{
 		return false;
