@@ -48,5 +48,37 @@ setAlarmTime() {
 			throws exception
 	not throw exception
 }
-	
 
+//--------------------------------------------------------------------------------------------------------------------------
+
+//Requestor creates an object for his eventual request
+private void init()
+{
+	providerObject = mySystem.createObject(providerObjectID);	
+}
+
+//Provider sets up a listener for any requestors, as well as his object
+private void init()
+{
+	myObject = mySystem.createObject(myObjectID);
+	myObject.beginProvide(EndToEndSecurityInterface.DEF, new ProviderListener());  
+}
+
+//REQUESTOR sends a set request to set EndToEndSecurity as TRUE
+public void sendSetRequest(boolean _security) {
+	try{
+	DOFBoolean value = new DOFBoolean(_security);
+	providerObject.set(EndToEndSecurityInterface.PROPERTY_SECURITY_ACTIVE, booleanValue, TIMEOUT); //REQUESTOR's object, passes TRUE
+	return true;
+	catch{
+		return false;
+	}	
+	}
+}
+
+//Provider receives the set request
+public void setSecurity(boolean _security) {
+	securityValue = _security;
+}
+
+//Once provider receives the TRUE value for EndToEndSecurity, start a Diffie Hellman Exchange
