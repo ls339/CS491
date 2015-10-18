@@ -46,7 +46,7 @@ setAlarmTime() {
 	DOFObject.SendSetRequest(n)
 		if exception
 			throws exception
-	not throw exception
+	return 0
 }
 
 //--------------------------------------------------------------------------------------------------------------------------
