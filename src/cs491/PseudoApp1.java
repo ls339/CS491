@@ -40,7 +40,7 @@ Function: Destroys an end-to-end connection
 
 /* Test app using our interface */
 Input: integer n which represents time, DOFObject
-Output: integer r ; 0 = success, 1 = failure
+Output: integer, 0 = success, 1 = failure
 setAlarmTime() {
 	DOFObject.beginSession()
 	DOFObject.SendSetRequest(n)
