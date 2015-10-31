@@ -18,6 +18,36 @@ import org.opendof.core.oal.endtoend.DOFAbstraction;
 
 @SuppressWarnings("serial")
 public class TrainingUI extends JFrame {
+/*	
+	// End-To-End Security 
+    JPanel pnlSecRequestor;
+    
+    //Set visual elements
+    JPanel pnlSecSet;
+    
+    JRadioButton btnSecProvider1;
+    JRadioButton btnSecProvider2;
+    ButtonGroup providerSecListButtonGroup;
+    JPanel pnlSecProviderSelection;
+    
+    JRadioButton btnSecSetTrue;
+    JRadioButton btnSecSetFalse;
+    ButtonGroup setSecButtonGroup;
+    JLabel lblSecSetResults;
+    JButton btnSecSetOp;
+    
+    //get visual elements
+    JPanel pnlSecGet;
+    JButton btnSecGetOp;
+    JLabel lblSecGetResults;
+    
+    //invoke visual elements
+    JPanel pnlSecInvoke;
+    JLabel lblSecCurrentTime;
+    JButton btnSecInvokeOp;
+    JLabel lblSecInvokeResults;
+    
+    // End-To-End Security
 
     JPanel pnlRequestor;
     
@@ -86,6 +116,8 @@ public class TrainingUI extends JFrame {
     JLabel lblLastProvider2Operation;
     JLabel lblLastReceivedTime2;
     
+    
+    
     ActionListener actionListener = new TrainingUIActionListener();
     java.util.Timer timeUpdater = new java.util.Timer();
     Date now = new Date();
@@ -108,7 +140,7 @@ public class TrainingUI extends JFrame {
         provider = new Provider(dofAbstraction.createSystem("provider"), providerOID);
         provider2 = new Provider(dofAbstraction.createSystem("provider2"), provider2OID);
         provider2.setDelay(0);
-        requestor = new Requestor(dofAbstraction.createSystem("requestor"), this);       
+        requestor = new Requestor(dofAbstraction.createSystem("requestor"), this);  
     }
     
     private void initUI(){
@@ -123,6 +155,124 @@ public class TrainingUI extends JFrame {
         borderRequestor.setTitleFont(defaultFont);
         pnlRequestor.setBorder(borderRequestor);
         pnlRequestor.setLayout(null);
+       
+        // End-To-End
+        pnlSecRequestor = new JPanel();
+        pnlSecRequestor.setBounds(23, 10, 250, 500);
+        TitledBorder borderSecRequestor = BorderFactory.createTitledBorder("Secure End-To-End Requestor");
+        borderSecRequestor.setTitleFont(defaultFont);
+        pnlSecRequestor.setBorder(borderSecRequestor);
+        pnlSecRequestor.setLayout(null);
+        
+        pnlSecProviderSelection = new JPanel();
+        pnlSecProviderSelection.setBounds(17, 20, 210, 60);
+        pnlSecProviderSelection.setLayout(null);
+        
+        btnSecProvider1 = new JRadioButton("prov@opendof.org");
+        btnSecProvider1.addActionListener(actionListener);
+        btnSecProvider1.setFont(defaultFont);
+        btnSecProvider1.setBounds(17, 10, 180, 20);
+        
+        btnSecProvider2 = new JRadioButton("prov2@opendof.org");
+        btnSecProvider2.addActionListener(actionListener);
+        btnSecProvider2.setFont(defaultFont);
+        btnSecProvider2.setBounds(17, 35, 180, 20);
+        
+        pnlSecProviderSelection.add(btnSecProvider1);
+        pnlSecProviderSelection.add(btnSecProvider2);
+        
+        providerSecListButtonGroup = new ButtonGroup();
+        providerSecListButtonGroup.add(btnSecProvider1);
+        providerSecListButtonGroup.add(btnSecProvider2);
+        btnSecProvider1.setSelected(true);
+        
+        //get visual elements
+        pnlSecGet = new JPanel();
+        pnlSecGet.setBounds(17, 80, 210, 95);
+        TitledBorder borderSecGetOp = BorderFactory.createTitledBorder("Get operation");
+        borderSecGetOp.setTitleFont(defaultFont);
+        pnlSecGet.setBorder(borderSecGetOp);
+        pnlSecGet.setLayout(null);
+        
+        btnSecGetOp = new JButton("<html><center>MyRequestor.Get()<br>&lt;--&nbsp;&lt;--</center></html>");
+        btnSecGetOp.addActionListener(actionListener);
+        btnSecGetOp.setFont(defaultFont);
+        btnSecGetOp.setMargin(new Insets(0, 0, 0, 0));
+        btnSecGetOp.setIconTextGap(0);
+        btnSecGetOp.setVerticalTextPosition(AbstractButton.CENTER);
+        btnSecGetOp.setHorizontalTextPosition(AbstractButton.CENTER);
+        btnSecGetOp.setBounds(20, 20, 140, 35);
+        
+        lblSecGetResults = new JLabel("Last retieved value:  Undefined");
+        lblSecGetResults.setFont(defaultFont);
+        lblSecGetResults.setBounds(20, 60, 170, 30);
+        
+        pnlSecGet.add(btnSecGetOp);
+        pnlSecGet.add(lblSecGetResults);
+        
+        //Set visual elements
+        pnlSecSet = new JPanel();
+        pnlSecSet.setBounds(17, 180, 210, 135);
+        TitledBorder borderSecSetOp = BorderFactory.createTitledBorder("Secure Set operation");
+        borderSecSetOp.setTitleFont(defaultFont);
+        pnlSecSet.setBorder(borderSecSetOp);
+        pnlSecSet.setLayout(null);
+                
+        btnSecSetTrue = new JRadioButton("True");
+        btnSecSetTrue.addActionListener(actionListener);
+        btnSecSetTrue.setFont(defaultFont);
+        btnSecSetTrue.setBounds(20, 20, 100, 20);
+        
+        btnSecSetFalse = new JRadioButton("False");
+        btnSecSetFalse.addActionListener(actionListener);
+        btnSecSetFalse.setFont(defaultFont);
+        btnSecSetFalse.setBounds(20, 45, 100, 20);
+        
+        setSecButtonGroup = new ButtonGroup();
+        setSecButtonGroup.add(btnSecSetTrue);
+        setSecButtonGroup.add(btnSecSetFalse);
+        
+        btnSecSetOp = new JButton("<html><center>MyRequestor.Set()<br>&raquo;&nbsp;&raquo;</center></html>");
+        btnSecSetOp.setEnabled(false);
+        btnSecSetOp.addActionListener(actionListener);
+        btnSecSetOp.setFont(defaultFont);
+        btnSecSetOp.setBounds(20, 70, 140, 35);
+        
+        lblSecSetResults = new JLabel();
+        lblSecSetResults.setText("Last Set operation:  Undefined");
+        lblSecSetResults.setFont(defaultFont);
+        lblSecSetResults.setBounds(20, 110, 170, 20);
+        
+        pnlSecSet.add(btnSecSetTrue);
+        pnlSecSet.add(btnSecSetFalse);
+        pnlSecSet.add(btnSecSetOp);
+        pnlSecSet.add(lblSecSetResults);
+        
+        //invoke visual elements
+        pnlSecInvoke = new JPanel();
+        pnlSecInvoke.setBounds(15, 320, 210, 160);
+        TitledBorder borderSecInvokeOp = BorderFactory.createTitledBorder("Secure Invoke operation");
+        borderSecInvokeOp.setTitleFont(defaultFont);
+        pnlSecInvoke.setBorder(borderSecInvokeOp);
+        pnlSecInvoke.setLayout(null);
+                
+        lblSecCurrentTime = new JLabel(DateFormat.getTimeInstance().format(new Date()));
+        lblSecCurrentTime.setBounds(20, 20, 150, 30);
+        lblSecCurrentTime.setFont(defaultFont);
+        
+        btnSecInvokeOp = new JButton("Secure MyRequestor.Invoke()");
+        btnSecInvokeOp.addActionListener(actionListener);
+        btnSecInvokeOp.setFont(defaultFont);
+        btnSecInvokeOp.setBounds(20, 55, 140, 50);
+        
+        lblSecInvokeResults = new JLabel("Last returned value:  Undefined");
+        lblSecInvokeResults.setFont(defaultFont);
+        lblSecInvokeResults.setBounds(20, 110, 170, 30);
+        
+        pnlSecInvoke.add(lblSecCurrentTime);
+        pnlSecInvoke.add(btnSecInvokeOp);
+        pnlSecInvoke.add(lblSecInvokeResults);
+        // End-To-End
         
         pnlProviderSelection = new JPanel();
         pnlProviderSelection.setBounds(17, 20, 210, 60);
@@ -418,10 +568,18 @@ public class TrainingUI extends JFrame {
         pnlProvider2Panel.add(lblLastProvider2Operation);
         pnlProvider2Panel.add(lblLastReceivedTime2);
         
+        
         pnlRequestor.add(pnlProviderSelection);
         pnlRequestor.add(pnlSet);
         pnlRequestor.add(pnlGet);
         pnlRequestor.add(pnlInvoke);
+        
+        // End-To-End
+        pnlSecRequestor.add(pnlSecProviderSelection);
+        pnlSecRequestor.add(pnlSecSet);
+        pnlSecRequestor.add(pnlSecGet);
+        pnlSecRequestor.add(pnlSecInvoke);
+        // End-To-End 
         
         pnlAsnychRequestor.add(pnlBeginSet);
         pnlAsnychRequestor.add(pnlBeginGet);
@@ -430,7 +588,8 @@ public class TrainingUI extends JFrame {
         this.setLayout(null);
         this.setBounds(30,30, 753, 550);
         this.setVisible(true);
-        this.add(pnlRequestor);
+        //this.add(pnlRequestor);
+        this.add(pnlSecRequestor); //End-To-End
         this.add(pnlAsnychRequestor);
         this.add(pnlProviderPanel);
         this.add(pnlProvider2Panel);
@@ -687,4 +846,5 @@ public class TrainingUI extends JFrame {
     public static void main(String args[]){
         new TrainingUI();
     }
+    */
 }

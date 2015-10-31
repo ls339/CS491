@@ -34,7 +34,7 @@ public class Provider {
     private void init(String _oidString){
         myOID = DOFObjectID.create(_oidString);
         myObject = mySystem.createObject(myOID);
-        myObject.beginProvide(TBAInterface.DEF, new ProviderListener());
+        myObject.beginProvide(TBAInterface.DEF, new ProviderListener()); 
     }
     
     public boolean getActive(){
@@ -65,7 +65,40 @@ public class Provider {
     }
     
     private class ProviderListener extends DOFObject.DefaultProvider {
-        
+    	/*
+         * Trap BeginSession here
+         * Override DefaultProvider to trap session callback
+         * Intercept begin provide
+         * if(end-to-end security was requested) then
+       	 * 		Save original interface DEF requested
+         *		Provide end-to-end secure beginProvide
+         * 		myObject.beginProvide(end-to-end security);
+         *		DH key negotiation
+         * 		Return end-to-end secured session object with original interface request.
+         * else 
+         * Let OpenDOF handle the session 
+         * 
+         * JS mentioned that we can copy one of the below methods to use for our function.
+         * 
+         * 
+        @Override
+        public void get(Provide operation, DOFRequest.Get request, Property property) {
+            DOFBoolean myDOFBoolean = new DOFBoolean(isActive);
+            
+            if(delay > 0){
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e) {
+                	request.respond(new DOFNotSupportedException("The specified item id is not supported by the specified interface."));
+                    //Specific exceptions are now available and the constructor below is deprecated.
+                    //request.respond(new DOFErrorException(DOFErrorException.APPLICATION_ERROR));
+                }
+            }
+            
+            request.respond(myDOFBoolean);
+            lastOp = "get";
+        }
+         */
         @Override
         public void get(Provide operation, DOFRequest.Get request, Property property) {
             DOFBoolean myDOFBoolean = new DOFBoolean(isActive);
