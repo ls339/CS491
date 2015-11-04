@@ -29,12 +29,15 @@ import org.opendof.core.oal.value.DOFDateTime;
 
 public class Requestor {
 
-    //TrainingUI parent;
+    TrainingUI parent; // <-- comment this out when turning off the gui
     DOFSystem mySystem;
     Map<String, DOFObject> objectMap = new HashMap<String, DOFObject>(2);
     DOFObject broadcastObject = null;
     DOFQuery query;
     DOFObject currentProvider = null;
+    // For end-to-end
+    DOFOperation.Session SessionObject = null; 
+    DOFObject.SessionOperationListener operationListener;
     
     DOFOperation.Get activeGetOperation = null;
     DOFOperation.Set activeSetOperation = null;
@@ -43,10 +46,10 @@ public class Requestor {
     
     int TIMEOUT = 5000;
     
-    //public Requestor(DOFSystem _system, TrainingUI _parent){
-    public Requestor(DOFSystem _system){
+    public Requestor(DOFSystem _system, TrainingUI _parent){ // <-- comment this out when turning off the gui
+    //public Requestor(DOFSystem _system){
         mySystem = _system;
-        //this.parent = _parent; 
+        this.parent = _parent; // <-- comment this out when turning off the gui
         init();
     }
     
@@ -91,9 +94,13 @@ public class Requestor {
          */
         try{
             DOFResult<DOFValue> myResult;
+            DOFResult<DOFValue> otherResult;
             if(currentProvider != null)
             {
-                myResult = currentProvider.get(TBAInterface.PROPERTY_ALARM_ACTIVE, TIMEOUT);
+            	// end-to-end
+            	SessionObject = currentProvider.beginSession(TBAInterface.DEF, ETEInterface.IID, operationListener);
+
+            	myResult = currentProvider.get(TBAInterface.PROPERTY_ALARM_ACTIVE, TIMEOUT);
                 return myResult.asBoolean();
             }
             return null;
@@ -177,7 +184,7 @@ public class Requestor {
             if(exception == null) {
                  	DOFObjectID providerID = providerInfo.getProviderID();
                  	String providerIDString = providerID.toStandardString();
-                 	//parent.displaySetResults(providerIDString);
+                 	parent.displaySetResults(providerIDString); // <-- * 
              } else {
                  	//Handle the error.
              }
@@ -199,7 +206,7 @@ public class Requestor {
                  
                  	Boolean unwrappedResult = DOFType.asBoolean(result); 
                  
-                 	//parent.displayGetResults(providerIDString, unwrappedResult);
+                 	parent.displayGetResults(providerIDString, unwrappedResult);// <-- * 
              } else {
                  	//Handle the error.
              }
@@ -219,7 +226,7 @@ public class Requestor {
                  	String providerIDString = providerID.toStandardString();
               
                  	Boolean unwrappedResult = DOFType.asBoolean(result.get(0));
-                 	//parent.displayInvokeResults(providerIDString, unwrappedResult);
+                 	parent.displayInvokeResults(providerIDString, unwrappedResult); // <-- comment this out when turning off the gui
              } else {
                  	if(exception.getClass().equals(DOFProviderException.class)){
                      		DOFProviderException ex = (DOFProviderException) exception;

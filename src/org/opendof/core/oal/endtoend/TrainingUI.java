@@ -18,9 +18,10 @@ import org.opendof.core.oal.endtoend.DOFAbstraction;
 
 @SuppressWarnings("serial")
 public class TrainingUI extends JFrame {
-/*	
+	
 	// End-To-End Security 
-    JPanel pnlSecRequestor;
+    /*
+	JPanel pnlSecRequestor;
     
     //Set visual elements
     JPanel pnlSecSet;
@@ -46,7 +47,7 @@ public class TrainingUI extends JFrame {
     JLabel lblSecCurrentTime;
     JButton btnSecInvokeOp;
     JLabel lblSecInvokeResults;
-    
+    */
     // End-To-End Security
 
     JPanel pnlRequestor;
@@ -148,15 +149,9 @@ public class TrainingUI extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         
         Font defaultFont = new Font("Microsoft Sans Serif", Font.PLAIN, 11);
-        
-        pnlRequestor = new JPanel();
-        pnlRequestor.setBounds(23, 10, 250, 500);
-        TitledBorder borderRequestor = BorderFactory.createTitledBorder("Requestor");
-        borderRequestor.setTitleFont(defaultFont);
-        pnlRequestor.setBorder(borderRequestor);
-        pnlRequestor.setLayout(null);
        
         // End-To-End
+        /*
         pnlSecRequestor = new JPanel();
         pnlSecRequestor.setBounds(23, 10, 250, 500);
         TitledBorder borderSecRequestor = BorderFactory.createTitledBorder("Secure End-To-End Requestor");
@@ -272,7 +267,15 @@ public class TrainingUI extends JFrame {
         pnlSecInvoke.add(lblSecCurrentTime);
         pnlSecInvoke.add(btnSecInvokeOp);
         pnlSecInvoke.add(lblSecInvokeResults);
+        */
         // End-To-End
+        
+        pnlRequestor = new JPanel();
+        pnlRequestor.setBounds(23, 10, 250, 500);
+        TitledBorder borderRequestor = BorderFactory.createTitledBorder("+Requestor+");
+        borderRequestor.setTitleFont(defaultFont);
+        pnlRequestor.setBorder(borderRequestor);
+        pnlRequestor.setLayout(null);
         
         pnlProviderSelection = new JPanel();
         pnlProviderSelection.setBounds(17, 20, 210, 60);
@@ -294,7 +297,7 @@ public class TrainingUI extends JFrame {
         providerListButtonGroup = new ButtonGroup();
         providerListButtonGroup.add(btnProvider1);
         providerListButtonGroup.add(btnProvider2);
-        btnProvider1.setSelected(true);
+        btnProvider2.setSelected(true);
         
         //get visual elements
         pnlGet = new JPanel();
@@ -386,7 +389,7 @@ public class TrainingUI extends JFrame {
         //Asynch visual elements
         pnlAsnychRequestor = new JPanel();
         pnlAsnychRequestor.setBounds(278, 10, 270, 500);
-        TitledBorder borderAsynchRequestor = BorderFactory.createTitledBorder("Asynchronous Requestor");
+        TitledBorder borderAsynchRequestor = BorderFactory.createTitledBorder("+Asynchronous Requestor+");
         borderAsynchRequestor.setTitleFont(defaultFont);
         pnlAsnychRequestor.setBorder(borderAsynchRequestor);
         pnlAsnychRequestor.setLayout(null);
@@ -575,10 +578,12 @@ public class TrainingUI extends JFrame {
         pnlRequestor.add(pnlInvoke);
         
         // End-To-End
+        /*
         pnlSecRequestor.add(pnlSecProviderSelection);
         pnlSecRequestor.add(pnlSecSet);
         pnlSecRequestor.add(pnlSecGet);
         pnlSecRequestor.add(pnlSecInvoke);
+        */
         // End-To-End 
         
         pnlAsnychRequestor.add(pnlBeginSet);
@@ -588,8 +593,8 @@ public class TrainingUI extends JFrame {
         this.setLayout(null);
         this.setBounds(30,30, 753, 550);
         this.setVisible(true);
-        //this.add(pnlRequestor);
-        this.add(pnlSecRequestor); //End-To-End
+        this.add(pnlRequestor);
+        //this.add(pnlSecRequestor); //End-To-End
         this.add(pnlAsnychRequestor);
         this.add(pnlProviderPanel);
         this.add(pnlProvider2Panel);
@@ -846,5 +851,5 @@ public class TrainingUI extends JFrame {
     public static void main(String args[]){
         new TrainingUI();
     }
-    */
+    
 }

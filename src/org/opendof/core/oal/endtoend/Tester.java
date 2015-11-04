@@ -27,6 +27,7 @@ public class Tester {
     */
 	
 	//public static void main(String args[]){
+	/*
 	public static void main(String args[]){
 		
 		DOFAbstraction dofAbstraction;
@@ -46,5 +47,6 @@ public class Tester {
 		System.out.println("Hello");
 
 	}
+	*/
 
 }
