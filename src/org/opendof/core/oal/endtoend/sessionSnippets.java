@@ -100,7 +100,7 @@ public class CustomSessionOperationListener implements SessionOperationListener
 	
 	public void generateEncodedPublicKey() //params required?
 	{
-	// ls
+	// Steps alice does or bob does to generate, encode and send public key to one another, to be done by saad
 	private static final byte skip1024ModulusBytes[] = {
         (byte)0xF4, (byte)0x88, (byte)0xFD, (byte)0x58,
         (byte)0x4E, (byte)0x49, (byte)0xDB, (byte)0xCD,
