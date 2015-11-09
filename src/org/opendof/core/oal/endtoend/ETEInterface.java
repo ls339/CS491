@@ -15,21 +15,21 @@ public class ETEInterface {
 
     // Declare openDOF types
     // Blob type
-	public static final DOFType BLOB_KEY = DOFType.BLOB;
+	//public static final DOFType BLOB_KEY = DOFType.BLOB;
+	public static final DOFBlob.Type BLOB_KEY = new DOFBlob.Type(32, 32);
 	
 	public static final DOFInterface DEF;
 	public static final DOFInterfaceID IID = DOFInterfaceID.create("[63:{53551070}]");
 
-	
-    
     public static final int PROPERTY_BLOB_KEY_ID = 1;
     public static final int METHOD_SEND_ENCODED_PUB_KEY_ID = 2;
     public static final int METHOD_GEN_SHARED_SECRET_ID = 3;
     public static final int METHOD_DATA_TRANSFORM_ID = 4;
     
+    /*
 	public static final DOFInterface.Property PROPERTY_ALARM_ACTIVE;
 	public static final DOFInterface.Property PROPERTY_ALARM_TIME_VALUE;
-	
+	*/
 	/*
 	 * split this into two methods
 	 * (Method 1)
@@ -50,7 +50,6 @@ public class ETEInterface {
 	public static final DOFInterface.Method METHOD_SET_NEW_TIME;
 	public static final DOFInterface.Event EVENT_ALARM_TRIGGERED;
 	public static final DOFInterface.Exception EXCEPTION_BAD_TIME_VALUE;
-	
 	
 	static {
     	DEF = new DOFInterface.Builder(IID)
