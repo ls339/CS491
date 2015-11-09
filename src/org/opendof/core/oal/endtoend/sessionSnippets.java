@@ -25,6 +25,8 @@ private class SessionProvider extends DOFObject.DefaultProvider{
 		}
 	}
 	
+	//Steps bob does to generate, encode and send public key to one another, to be done by saad
+
 	//new addition - Alex Xi - 11/8/15
 	keyPairObject kpo = null; //key pair for provider
 	byte[] requesterKey = null; //encoded key from requester
@@ -79,6 +81,9 @@ private class SessionProvider extends DOFObject.DefaultProvider{
 	}
 }
 
+	
+// Steps Alice does to generate, encode and send public key to one another, to be done by saad
+
 //This is the Requestor snippet
 sessionOp = requestor.beginSession(BaseInterface.DEF, KnownSessionType.IID, sessionTimeout, new CustomSessionOperationListener(), null);
 
@@ -100,7 +105,6 @@ public class CustomSessionOperationListener implements SessionOperationListener
 	
 	public void generateEncodedPublicKey() //params required?
 	{
-	// Steps alice does or bob does to generate, encode and send public key to one another, to be done by saad
 	private static final byte skip1024ModulusBytes[] = {
         (byte)0xF4, (byte)0x88, (byte)0xFD, (byte)0x58,
         (byte)0x4E, (byte)0x49, (byte)0xDB, (byte)0xCD,
