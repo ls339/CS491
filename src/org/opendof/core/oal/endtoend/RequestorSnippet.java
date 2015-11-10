@@ -1,21 +1,20 @@
 package org.opendof.core.oal.endtoend;
 
 public class RequestorSnippet {
-	// Steps Alice does to generate, encode and send public key to one another, to be done by saad
-	// 11/10/2015 Begining of Diffie helman Implementation by Saad
 	
+// 11/10/2015 Begining of Diffie helman Implementation by Saad
 	
-	// Phase 0: DH parameter creation
-	 DHParameterSpec dhSkipParamSpec;
-	 AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");  //Initialize(empty) parameters for the given algorithm
+         // Phase 0: DH parameter creation
+         DHParameterSpec dhSkipParamSpec;
+         AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");  //Initialize(empty) parameters for the given algorithm
          paramGen.init(1024); //Initializes this parameter generator for a size of 512 bits.
          AlgorithmParameters params = paramGen.generateParameters();  //Generate the parameters 
          dhSkipParamSpec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class); //Generate the parameters 
          
 
 	
-          // Phase 1: Key Pair Generation
-         // 
+          // Phase 1: Key Pair Generation, Key-Agree intialization and encoding public keys to be sent
+          
           KeyPairGenerator requestorKpairGen = KeyPairGenerator.getInstance("DH"); //Generate a pair of key(i.e private-public pair) of the specified algorithm
           requestorKpairGen.initialize(dhSkipParamSpec);//Initialize the keypair to the DH parameter generated before
           KeyPair requestorKpair = requestorKpairGen.generateKeyPair(); //Create a key and assign it to the generator above
@@ -40,17 +39,14 @@ public class RequestorSnippet {
           
 	//Phase 2: Do Phase, final phase of key agreement
 	 requestorKeyAgree.doPhase(providerPubKey, true);
-
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
+         
+         //Phase 3: Shared secret generation
+         //At this stage, both requestor and provider have completed the DH key agreement protocol.
+         //Both generate the (same) shared secret.
+         
+          byte[] requestorSharedSecret = requestorKeyAgree.generateSecret(); //Shared secret stored in a byte array
+          
+// 11/10/2015 Begining of Diffie helman Implementation by Saad
 
 	//This is the Requestor snippet
 	sessionOp = requestor.beginSession(BaseInterface.DEF, KnownSessionType.IID, sessionTimeout, new CustomSessionOperationListener(), null);
