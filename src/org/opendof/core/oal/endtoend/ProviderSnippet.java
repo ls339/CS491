@@ -38,7 +38,7 @@ public class ProviderSnippet {
 	 // Now provider must create his keys using these extracted DH parameters
 	 
 	  //Set up for DH Parameter extraction 
-	  //requestorPubKeyEnd = recieved.requestor; Assuming the encoded key recieved here
+	  requestorPubKeyEnc = recieved.requestor; //Assuming the encoded key recieved here
 	  DHParameterSpec dhSkipParamSpec;
           KeyFactory providerKeyFac = KeyFactory.getInstance("DH");  //Get Key specifications from key
           X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(requestorPubKeyEnc); //Create Key
@@ -63,7 +63,9 @@ public class ProviderSnippet {
 	    // Provider encodes his public key, and sends it over to requestor.	
             byte[] providerPubKeyEnc = providerKpair.getPublic().getEncoded(); //encode the public part of provider's key as a byte stream
 		
-		
+            //Phase 2: Do Phase, final phase of key agreement
+              providerKeyAgree.doPhase(requestorPubKey, true);
+
 		
 		
 		
