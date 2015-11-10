@@ -2,6 +2,39 @@ package org.opendof.core.oal.endtoend;
 
 public class RequestorSnippet {
 	// Steps Alice does to generate, encode and send public key to one another, to be done by saad
+	// 11/10/2015 Begining of Diffie helman Implementation by Saad
+	
+	
+	// Phase 0: DH parameter creation
+	 DHParameterSpec dhSkipParamSpec;
+	 AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");  //Initialize(empty) parameters for the given algorithm
+         paramGen.init(1024); //Initializes this parameter generator for a size of 512 bits.
+         AlgorithmParameters params = paramGen.generateParameters();  //Generate the parameters 
+         dhSkipParamSpec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class); //Generate the parameters 
+         
+
+	
+          // Phase 1: Key Pair Generation
+         // 
+          KeyPairGenerator requestorKpairGen = KeyPairGenerator.getInstance("DH"); //Generate a pair of key(i.e private-public pair) of the specified algorithm
+          requestorKpairGen.initialize(dhSkipParamSpec);//Initialize the keypair to the DH parameter generated before
+          KeyPair requestorKpair = requestorKpairGen.generateKeyPair(); //Create a key and assign it to the generator above
+	
+	 KeyAgreement requestorKeyAgree = KeyAgreement.getInstance("DH");//Create a key exchange Agreement of the "DH" parameter
+         requestorKeyAgree.init(requestorKpair.getPrivate()); //Initialize this key Agreement to the private part of requestor's keypair
+          
+          //Key-Pair Generation Complete, now send part
+           byte[] requestorPubKeyEnc = requestorKpair.getPublic().getEncoded(); //encode the public part of requestor's key as a byte stream
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	//This is the Requestor snippet
 	sessionOp = requestor.beginSession(BaseInterface.DEF, KnownSessionType.IID, sessionTimeout, new CustomSessionOperationListener(), null);
