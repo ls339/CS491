@@ -24,9 +24,25 @@ public class RequestorSnippet {
          requestorKeyAgree.init(requestorKpair.getPrivate()); //Initialize this key Agreement to the private part of requestor's keypair
           
           //Key-Pair Generation Complete, now send part
-           byte[] requestorPubKeyEnc = requestorKpair.getPublic().getEncoded(); //encode the public part of requestor's key as a byte stream
+          byte[] requestorPubKeyEnc = requestorKpair.getPublic().getEncoded(); //encode the public part of requestor's key as a byte stream
+          // send.requestorPubKeyEnc; sending to provider
+	
+           //The Requestor would wait for Provider's response at this point.
+          //Response would be provider's encoded public key
+          //This key needs to be saved for future use
+          
+            providerPubKeyEnc = recieved.provider; //Assuming the encoded key recieved here
+
+          KeyFactory requestorKeyFac = KeyFactory.getInstance("DH"); //Get Key specifications from key
+          X509EncodedKeySpec x509KeySpec1 = new X509EncodedKeySpec(providerPubKeyEnc); //Create Key
+          PublicKey providerPubKey = requestorKeyFac.generatePublic(x509KeySpec1); //Get public key
+          
+          
+	//Phase 2: Do Phase, final phase of key agreement
+	 requestorKeyAgree.doPhase(providerPubKey, true);
 
 	
+
 	
 	
 	
