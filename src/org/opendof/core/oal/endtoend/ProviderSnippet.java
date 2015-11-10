@@ -29,6 +29,45 @@ public class ProviderSnippet {
 			}
 		}
 		
+	 // Steps Provider does to generate, encode and send public key to one another, to be done by saad
+	// 11/10/2015 Begining of Diffie helman Implementation by Saad
+	
+	
+	 // Phase 0: DH parameter creation
+	 // Provider gets and encoded public key from which it extracts the DH paramters used
+	 // Now provider must create his keys using these extracted DH parameters
+	 
+	  //Set up for DH Parameter extraction 
+	  //requestorPubKeyEnd = recieved.requestor; Assuming the encoded key recieved here
+	  DHParameterSpec dhSkipParamSpec;
+          KeyFactory providerKeyFac = KeyFactory.getInstance("DH");  //Get Key specifications from key
+          X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(requestorPubKeyEnc); //Create Key
+          PublicKey requestorPubKey = providerKeyFac.generatePublic(x509KeySpec); //Get public key
+		
+          DHParameterSpec dhParamSpec = ((DHPublicKey) requestorPubKey).getParams(); //Get DH Param from public key
+		
+	 
+	 // Phase 1: Key Pair Generation, Key-Agree intialization and encoding public keys to be sent
+         // Now DH Param have been obtained, generate keys
+         
+        
+           System.out.println("provider: Generate DH keypair ..."); //remove or not ?
+           KeyPairGenerator providerKpairGen = KeyPairGenerator.getInstance("DH");  //Generate a pair of key(i.e private-public pair) of the specified algorithm
+           providerKpairGen.initialize(dhParamSpec); //Initialize the keypair to the DH parameter generated before
+           KeyPair providerKpair = providerKpairGen.generateKeyPair(); //Create a key and assign it to the generator above
+         
+           //Key-Pair Agreement Intialization 
+           KeyAgreement providerKeyAgree = KeyAgreement.getInstance("DH"); //Create a key exchange Agreement of the "DH" parameter
+           providerKeyAgree.init(providerKpair.getPrivate()); //Initialize this key Agreement to the private part of requestor's keypair
+		
+	    // Provider encodes his public key, and sends it over to requestor.	
+            byte[] providerPubKeyEnc = providerKpair.getPublic().getEncoded(); //encode the public part of provider's key as a byte stream
+		
+		
+		
+		
+		
+		
 		//Steps bob does to generate, encode and send public key to one another, to be done by saad
 
 		//new addition - Alex Xi - 11/8/15
