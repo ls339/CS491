@@ -1,3 +1,5 @@
+//Cipher input stream, cipher output streams instead of byte[]
+
 public transformSendData(DOFInterfaceID interfaceID, byte[] data) 
 {
 	//receiverSharedSecret generated outside this method
