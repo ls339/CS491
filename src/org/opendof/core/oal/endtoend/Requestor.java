@@ -5,6 +5,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+// ETE
+import java.math.BigInteger;
+import java.security.KeyPair;
+import javax.crypto.KeyAgreement;
+import java.security.AlgorithmParameterGenerator;
+import java.security.AlgorithmParameters;
+import java.security.KeyPairGenerator;
+import javax.crypto.spec.*;
 
 import org.opendof.core.oal.endtoend.TBAInterface;
 import org.opendof.core.oal.endtoend.TrainingUI;
@@ -24,6 +32,7 @@ import org.opendof.core.oal.DOFType;
 import org.opendof.core.oal.DOFValue;
 import org.opendof.core.oal.DOFOperation.Query;
 import org.opendof.core.oal.security.DOFSecurityException;
+import org.opendof.core.oal.value.DOFBlob;
 import org.opendof.core.oal.value.DOFBoolean;
 import org.opendof.core.oal.value.DOFDateTime;
 
@@ -131,6 +140,39 @@ public class Requestor {
             return null;
         }
     }
+   
+    // ETE SEND_ENCODED_PUB_KEY Method
+    public void send_key(KeyAgreement myKeyAgreement) {
+        try{
+        	DHParameterSpec dhSkipParamSpec;
+        	AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
+        	paramGen.init(1024);
+        	AlgorithmParameters params = paramGen.generateParameters(); 
+        	dhSkipParamSpec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class); 
+        	KeyPairGenerator requestorKpairGen = KeyPairGenerator.getInstance("DH");
+        	requestorKpairGen.initialize(dhSkipParamSpec);
+        	KeyPair requestorKpair = requestorKpairGen.generateKeyPair();
+        	myKeyAgreement.init(requestorKpair.getPrivate());
+        	byte[] requestorPubKeyEnc = requestorKpair.getPublic().getEncoded();
+        	DOFBlob.Type BlobPubKey;
+        	
+        	BlobPubKey = (DOFBlob.Type)requestorPubKeyEnc;
+        	
+        	if(currentProvider != null)
+            {
+                DOFResult<List<DOFValue>> myResults = currentProvider.invoke(ETEInterface.SEND_ENCODED_PUB_KEY, TIMEOUT, BlobPubKey);        
+                List<DOFValue> myValueList = myResults.get();
+                //return DOFType.asBoolean(myValueList.get(0));
+            }
+            //return null;
+        } catch(DOFProviderException e){
+            //return null;
+        } catch (DOFErrorException e) {
+            //return null;
+        } catch (DOFException e) {
+            //return null;
+        }
+    }
     
     public void sendBeginGetRequest() {
     	activeGetOperation = broadcastObject.beginGet(TBAInterface.PROPERTY_ALARM_ACTIVE, TIMEOUT, new GetListener());
@@ -149,7 +191,16 @@ public class Requestor {
             
             activeInvokeOperation = broadcastObject.beginInvoke(TBAInterface.METHOD_SET_NEW_TIME, parameters, TIMEOUT, new InvokeListener());
     }
-
+    /*
+    public void sendBeginInvokeRequest(Date _alarmTime) {
+    	List<DOFValue> parameters = new ArrayList<DOFValue>();
+            DOFDateTime alarmTimeParameter = new DOFDateTime(_alarmTime);
+            parameters.add(alarmTimeParameter);
+            
+            activeInvokeOperation = broadcastObject.beginInvoke(TBAInterface.METHOD_SET_NEW_TIME, parameters, TIMEOUT, new InvokeListener());
+    }
+     */
+    
     private class QueryListener implements DOFSystem.QueryOperationListener
     {
 

@@ -13,9 +13,6 @@ import javax.crypto.spec.*;
 
 public class ETEInterface {
 
-    // Declare openDOF types
-    // Blob type
-	//public static final DOFType BLOB_KEY = DOFType.BLOB;
 	public static final DOFBlob.Type BLOB_KEY = new DOFBlob.Type(32, 32);
 	
 	public static final DOFInterface DEF;
@@ -47,10 +44,6 @@ public class ETEInterface {
 	public static final DOFInterface.Method GEN_SHARED_SECRET; // Method 2
 	public static final DOFInterface.Method DATA_TRANSFORM; 
 	
-	public static final DOFInterface.Method METHOD_SET_NEW_TIME;
-	public static final DOFInterface.Event EVENT_ALARM_TRIGGERED;
-	public static final DOFInterface.Exception EXCEPTION_BAD_TIME_VALUE;
-	
 	static {
     	DEF = new DOFInterface.Builder(IID)
     			.addProperty(1, true, true, BLOB_KEY)
@@ -60,5 +53,6 @@ public class ETEInterface {
 
     	SEND_ENCODED_PUB_KEY = DEF.getMethod(METHOD_SEND_ENCODED_PUB_KEY_ID);
     	GEN_SHARED_SECRET = DEF.getMethod(METHOD_GEN_SHARED_SECRET_ID);
+    	DATA_TRANSFORM = DEF.getMethod(METHOD_DATA_TRANSFORM_ID);
 	}
 }
