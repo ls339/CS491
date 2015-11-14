@@ -1,9 +1,35 @@
 //Cipher input stream, cipher output streams instead of byte[]
 
+/*
 Cipher aesEncryptCipher = Cipher.getInstance("AES");
 Cipher aesDecryptCipher = Cipher.getInstance("AES"); 
-AesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
-AesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret); //TODO find out if ant of this can be merged
+aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
+aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret); //TODO find out if this is removable
+*/
+
+//@Override | TODO Pass in aesDecryptCipher? | TODO pass as input shared secret? or no?
+public CipherInputStream(InputStream in, Cipher aesDecryptCipher)
+{
+	sharedSecret = receiverSharedSecret;
+	aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+	aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret);
+	
+	CipherInputStream cis = new CipherInputStream(in, aesDecryptCipher);
+	
+	return cis; //TODO what do we return?
+} //TODO how to close stream?
+
+//@Override | TODO what do we pass in?
+public CipherOutputStream(OutputStream os, Cipher aesDecryptCipher)
+{
+	sharedSecret = receiverSharedSecret;
+	aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+	aesDecryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
+	
+	CipherOutputStream cos = new CipherOutputStream(in, aesDecryptCipher);
+	
+	return cos; //TODO what do we return?
+} //TODO how to close stream?
 
 @Override
 public transformSendData(DOFInterfaceID interfaceID, byte[] data) 
