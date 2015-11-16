@@ -152,7 +152,7 @@ public class Requestor {
         try{
         	DHParameterSpec dhSkipParamSpec;
         	AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
-        	paramGen.init(1024);
+        	paramGen.init(1024); //TODO change to 2048
         	AlgorithmParameters params = paramGen.generateParameters(); 
         	dhSkipParamSpec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class); 
         	KeyPairGenerator requestorKpairGen = KeyPairGenerator.getInstance("DH");
