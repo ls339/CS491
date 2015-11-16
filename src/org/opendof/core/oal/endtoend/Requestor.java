@@ -182,7 +182,7 @@ public class Requestor {
     
     public void gen_shared_secret(byte[] encPubKey) {
     	// Decode pub key
-    	// Generate DH param specks from decoded pubKey
+    	// Generate DH params specks from decoded pubKey
     	// Key agreement do phase
     	// generate shared secret
     	// return shared secret
