@@ -160,8 +160,7 @@ public class Requestor {
         	KeyPair requestorKpair = requestorKpairGen.generateKeyPair();
         	myKeyAgreement.init(requestorKpair.getPrivate());
         	//byte[] requestorPubKeyEnc = requestorKpair.getPublic().getEncoded();
-        	//Create the 16 byte IV 
-        	/*
+        	/* Create the 16 byte IV 
         	    byte[] iv = new byte[16];
                 SecureRandom random = new SecureRandom();
                 random.nextBytes(iv);
