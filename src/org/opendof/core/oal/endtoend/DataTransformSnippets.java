@@ -6,6 +6,8 @@ Cipher aesEncryptCipher = Cipher.getInstance("AES");
 Cipher aesDecryptCipher = Cipher.getInstance("AES"); 
 aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
 aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret); //TODO find out if this is removable
+
+workflow: est session - key neg - construct obj to gen ciphers - attach on both sides of session
 */
 
 // requester - session operation returned, dofoperation.session returned when session created
