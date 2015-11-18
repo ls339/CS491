@@ -13,7 +13,7 @@ import javax.crypto.spec.*;
 
 public class ETEInterface {
 
-	public static final DOFBlob.Type BLOB_KEY = new DOFBlob.Type(32, 32); //make 256
+	public static final DOFBlob.Type BLOB_KEY = new DOFBlob.Type(32, 32); //(min,max) make 256 -add another blob type for the IV, this has to be 16 bytes
 	
 	public static final DOFInterface DEF;
 	public static final DOFInterfaceID IID = DOFInterfaceID.create("[63:{53551070}]");
