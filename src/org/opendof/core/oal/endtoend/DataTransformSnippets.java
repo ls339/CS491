@@ -1,6 +1,7 @@
 //Cipher input stream, cipher output streams instead of byte[]
 
 /*
+-specific data transform interface
 Cipher aesEncryptCipher = Cipher.getInstance("AES");
 Cipher aesDecryptCipher = Cipher.getInstance("AES"); 
 aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
