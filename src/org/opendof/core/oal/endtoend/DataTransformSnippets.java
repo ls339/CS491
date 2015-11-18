@@ -23,7 +23,7 @@ public CipherInputStream(InputStream in, Cipher aesDecryptCipher)
 	return cis; //TODO what do we return?
 } //TODO how to close stream?
 
-//create ciphers in initialized method or constructor
+//create ciphers in initialized method or constructor - class level private variables
 //@Override | TODO what do we pass in?
 public CipherOutputStream(OutputStream os, Cipher aesDecryptCipher)
 {
