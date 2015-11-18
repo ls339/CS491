@@ -1,7 +1,7 @@
 //Cipher input stream, cipher output streams instead of byte[]
 
 /*
--specific data transform interface
+-implement data transform interface
 Cipher aesEncryptCipher = Cipher.getInstance("AES");
 Cipher aesDecryptCipher = Cipher.getInstance("AES"); 
 aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
@@ -27,7 +27,7 @@ public CipherOutputStream(OutputStream os, Cipher aesDecryptCipher)
 	aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 	aesDecryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
 	
-	CipherOutputStream cos = new CipherOutputStream(in, aesDecryptCipher);
+	CipherOutputStream cos = new CipherOutputStream(os, aesDecryptCipher);
 	
 	return cos; //TODO what do we return?
 } //TODO how to close stream?
