@@ -152,7 +152,7 @@ public class Requestor {
         try{
         	DHParameterSpec dhSkipParamSpec;
         	AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
-        	paramGen.init(1024);
+        	paramGen.init(1024); //change to 2048
         	AlgorithmParameters params = paramGen.generateParameters(); 
         	dhSkipParamSpec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class); 
         	KeyPairGenerator requestorKpairGen = KeyPairGenerator.getInstance("DH");
@@ -160,7 +160,7 @@ public class Requestor {
         	KeyPair requestorKpair = requestorKpairGen.generateKeyPair();
         	myKeyAgreement.init(requestorKpair.getPrivate());
         	//byte[] requestorPubKeyEnc = requestorKpair.getPublic().getEncoded();
-        	DOFBlob BlobPubKey = new DOFBlob(requestorKpair.getPublic().getEncoded());
+        	DOFBlob BlobPubKey = new DOFBlob(requestorKpair.getPublic().getEncoded()); //this creates a 256 byte array - find out the exact size if not 256
         	
         	if(currentProvider != null)
             {
