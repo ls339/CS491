@@ -1,5 +1,5 @@
 package org.opendof.core.oal.endtoend;
-
+// import open dof standard library & data transform interface
 import org.opendof.core.oal.DOFInterface;
 import org.opendof.core.oal.DOFInterfaceID;
 import org.opendof.core.oal.DOFType;
@@ -47,7 +47,7 @@ public class ETEInterface {
 	static {
     	DEF = new DOFInterface.Builder(IID)
     			.addProperty(1, true, true, BLOB_KEY)
-    			.addMethod(2, new DOFType[] { BLOB_KEY },new DOFType[] { BLOB_KEY }).build();
+    			.addMethod(2, new DOFType[] { BLOB_KEY },new DOFType[] { BLOB_KEY }).build(); //one type for IV, one for shared Key
     			//.addMethod(3, null, null)
     			//.addMethod(4, new DOFType[] { BLOB_KEY }, null).build();
 
