@@ -160,6 +160,13 @@ public class Requestor {
         	KeyPair requestorKpair = requestorKpairGen.generateKeyPair();
         	myKeyAgreement.init(requestorKpair.getPrivate());
         	//byte[] requestorPubKeyEnc = requestorKpair.getPublic().getEncoded();
+        	//Create the 16 byte IV 
+        	/*
+        	    byte[] iv = new byte[16];
+                SecureRandom random = new SecureRandom();
+                random.nextBytes(iv);
+                IvParameterSpec ivParameterSpec = new IvParameterSpec(iv); //IV needs to be initialized outside of this method - private variable maybe?
+        	*/
         	DOFBlob BlobPubKey = new DOFBlob(requestorKpair.getPublic().getEncoded()); //this creates a 256 byte array - find out the exact size if not 256
         	
         	if(currentProvider != null)
