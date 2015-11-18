@@ -47,6 +47,7 @@ public class ETEInterface {
 	static {
     	DEF = new DOFInterface.Builder(IID)
     			.addProperty(1, true, true, BLOB_KEY)
+    			// pass in IV to first dof type - BLOB_IV
     			.addMethod(2, new DOFType[] { BLOB_KEY },new DOFType[] { BLOB_KEY }).build(); //one type for IV, one for shared Key
     			//.addMethod(3, null, null)
     			//.addMethod(4, new DOFType[] { BLOB_KEY }, null).build();
