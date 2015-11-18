@@ -13,7 +13,7 @@ import javax.crypto.spec.*;
 
 public class ETEInterface {
 
-	public static final DOFBlob.Type BLOB_KEY = new DOFBlob.Type(32, 32); //(min,max) make 256 -add another blob type for the IV, this has to be 16 bytes
+	public static final DOFBlob.Type BLOB_KEY = new DOFBlob.Type(32, 32); //(min,max,iv) make 256 -add another blob type for the IV, this has to be 16 bytes
 	
 	public static final DOFInterface DEF;
 	public static final DOFInterfaceID IID = DOFInterfaceID.create("[63:{53551070}]");
@@ -48,7 +48,7 @@ public class ETEInterface {
     	DEF = new DOFInterface.Builder(IID)
     			.addProperty(1, true, true, BLOB_KEY)
     			// pass in IV to first dof type - BLOB_IV - which the requester generates - input and output are big nums, not BLOB_KEYs
-    			.addMethod(2, new DOFType[] { BLOB_KEY },new DOFType[] { BLOB_KEY }).build(); //one type for IV, one for shared Key
+    			.addMethod(2, new DOFType[] { BLOB_KEY },new DOFType[] { BLOB_KEY }).build(); //one for input, one for output, one type for IV - needs 3 see line 16
     			//.addMethod(3, null, null)
     			//.addMethod(4, new DOFType[] { BLOB_KEY }, null).build();
 
