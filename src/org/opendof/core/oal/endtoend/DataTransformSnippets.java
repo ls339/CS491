@@ -11,7 +11,7 @@ aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret); //TODO find out if thi
 public CipherInputStream(InputStream in, Cipher aesDecryptCipher)
 {
 	sharedSecret = receiverSharedSecret;
-	aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+	aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //MUST specify an IV and distribute to both sides
 	aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret);
 	
 	CipherInputStream cis = new CipherInputStream(in, aesDecryptCipher);
