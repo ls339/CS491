@@ -32,7 +32,7 @@ public CipherOutputStream(OutputStream os, Cipher aesDecryptCipher)
 } //TODO how to close stream?
 
 @Override
-public transformSendData(DOFInterfaceID interfaceID, byte[] data) 
+public transformSendData(DOFInterfaceID interfaceID, byte[] data) //Data transform encapsulates the cipher streams
 {
 	//receiverSharedSecret generated outside this method
 	SecretKey sharedSecret = receiverSharedSecret; //change to provider if provider
