@@ -1,12 +1,15 @@
 //Cipher input stream, cipher output streams instead of byte[]
 
 /*
--implement data transform interface
+TODO --------> implement data transform interface: dofoperation.session.datatransform
 Cipher aesEncryptCipher = Cipher.getInstance("AES");
 Cipher aesDecryptCipher = Cipher.getInstance("AES"); 
 aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
 aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret); //TODO find out if this is removable
 */
+
+// requester - session operation returned, dofoperation.session returned when session created
+// provider - dofrequest.session created when session request received. call setdatatransform here
 
 //@Override | TODO Pass in aesDecryptCipher? | TODO pass as input shared secret? or no?
 public CipherInputStream(InputStream in, Cipher aesDecryptCipher)
