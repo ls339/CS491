@@ -159,22 +159,24 @@ public class Requestor {
         	requestorKpairGen.initialize(dhSkipParamSpec);
         	KeyPair requestorKpair = requestorKpairGen.generateKeyPair();
         	myKeyAgreement.init(requestorKpair.getPrivate());
-        	//byte[] requestorPubKeyEnc = requestorKpair.getPublic().getEncoded();
+        	
         	/* Create the 16 byte IV 
         	    byte[] iv = new byte[16];
                 SecureRandom random = new SecureRandom();
                 random.nextBytes(iv);
                 IvParameterSpec ivParameterSpec = new IvParameterSpec(iv); //IV needs to be initialized outside of this method - private variable maybe?
         	*/
-        	DOFBlob BlobPubKey = new DOFBlob(requestorKpair.getPublic().getEncoded()); //this creates a 256 byte array - find out the exact size if not 256
         	
+        	DOFBlob BlobPubKey = new DOFBlob(requestorKpair.getPublic().getEncoded()); //this creates a 256 byte array - find out the exact size if not 256
+        	DOFBlob InitVector = new DOFBlob(requestorKpair.getPublic().getEncoded()); // Placeholder
+
         	if(currentProvider != null)
             {
-                DOFResult<List<DOFValue>> myResults = currentProvider.invoke(ETEInterface.SEND_ENCODED_PUB_KEY, TIMEOUT, BlobPubKey);        
+                DOFResult<List<DOFValue>> myResults = currentProvider.invoke(ETEInterface.SEND_ENCODED_PUB_KEY, TIMEOUT, InitVector, BlobPubKey);
                 List<DOFValue> myValueList = myResults.get();
                 //return DOFType.asBytes(myValueList.get(0));
                 //return DOFType.asBoolean(myValueList.get(0));
-                gen_shared_secret(DOFType.asBytes(myValueList.get(0)));
+                byte[] sharedSecret = gen_shared_secret(DOFType.asBytes(myValueList.get(0)));
             }
             //return null;
         } catch(DOFProviderException e){
@@ -191,9 +193,13 @@ public class Requestor {
     	// Key agreement do phase
     	// generate shared secret
     	// return shared secret
-    	return byte[];
+    	return new byte[0]; // Place holder
     }
     
+    public void init_data_transform() {
+    	
+    	
+    }
     public void sendBeginGetRequest() {
     	activeGetOperation = broadcastObject.beginGet(TBAInterface.PROPERTY_ALARM_ACTIVE, TIMEOUT, new GetListener());
     }
