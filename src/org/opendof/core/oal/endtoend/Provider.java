@@ -64,6 +64,56 @@ public class Provider {
         delay = _delay;
     }
     //By Saad, 
+      public PublicKey getrequestorPubKey(byte[] requestorPubKeyEnc)
+    {
+          KeyFactory providerKeyFac = KeyFactory.getInstance("DH");  //Get Key specifications from key
+          X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(requestorPubKeyEnc); //Create Key
+          PublicKey requestorPubKey = providerKeyFac.generatePublic(x509KeySpec); //Get public key
+        }
+     
+    PublicKey requestorPubKey= getrequestorPubKey(BlobPubKey); //assuming we recieve requestorPubKey Blob here
+    
+      // ETE SEND_ENCODED_PUB_KEY Method
+      //Clarify about throws
+      //Clarify about stuff after blob and how to return stuff to requestor
+      //Passing keyAgreement and requestorPubKey so DH parameters can be intialized
+    public void SEND_ENCODED_PUB_KEY(KeyAgreement myKeyAgreement,PublicKey requestorPubKey) 
+    		throws NoSuchAlgorithmException,InvalidParameterSpecException, 
+    		InvalidAlgorithmParameterException, InvalidKeyException {
+        try{
+            
+            DHParameterSpec dhSkipParamSpec
+            DHParameterSpec dhParamSpec = ((DHPublicKey) requestorPubKey).getParams(); //Get DH Param from public key
+            KeyPairGenerator providerKpairGen = KeyPairGenerator.getInstance("DH");  //Generate a pair of key(i.e private-public pair) of the specified algorithm
+            providerKpairGen.initialize(dhParamSpec); //Initialize the keypair to the DH parameter generated before
+            KeyPair providerKpair = providerKpairGen.generateKeyPair(); //Create a key and assign it to the generator above
+            myKeyAgree.init(providerKpair.getPrivate());
+        	
+        	DOFBlob BlobPubKey = new DOFBlob(providerKpair.getPublic().getEncoded()); //this creates a 256 byte array - find out the exact size if not 256
+
+        	if(currentProvider != null)
+            {
+                DOFResult<List<DOFValue>> myResults = currentProvider.invoke(ETEInterface.SEND_ENCODED_PUB_KEY, TIMEOUT, InitVector, BlobPubKey);
+                List<DOFValue> myValueList = myResults.get();
+                //return DOFType.asBytes(myValueList.get(0));
+                //return DOFType.asBoolean(myValueList.get(0));
+                byte[] sharedSecret = gen_shared_secret(DOFType.asBytes(myValueList.get(0)));
+            }
+            //return null;
+        } catch(DOFProviderException e){
+            //return null;
+        } catch (DOFErrorException e) {
+            //return null;
+        } catch (DOFException e) {
+            //return null;
+        }
+    }
+    
+    KeyAgreement providerKeyAgree = KeyAgreement.getInstance("DH"); //Create a key exchange Agreement of the "DH" parameter
+    SEND_ENCODED_PUB_KEY(providerKeyAgree,requestorPubKey); // At this point providerKeyAgree is populated
+    providerKeyAgree.doPhase(requestorPubKey, true); //Pass the requestorrPubKey to the KeyAgreement
+    
+    
     //Input: a ProviderKeyagree parameter that has successfully intitated the do-phase of agreement
     //Output: a byte array containing the shared key
       public byte[] gen_shared_secret(byte[] providerKeyAgree) {
