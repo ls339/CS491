@@ -206,7 +206,7 @@ public class Requestor {
     KeyAgreement requestorKeyAgree = KeyAgreement.getInstance("DH"); //Create a key exchange Agreement of the "DH" parameter
     SEND_ENCODED_PUB_KEY(requestorKeyAgree); // At this point requestorKeyAgree is populated
     PublicKey providerPubKey= getproviderPubKey(ProviderPubKeyBlob); // Pass the ProviderPubKeyblod to the the function that extracts public key from it
-	requestorKeyAgree.doPhase(providerPubKey, true); //Pass the providerPubKey to the KeyAgreement
+    requestorKeyAgree.doPhase(providerPubKey, true); //Pass the providerPubKey to the KeyAgreement
      
     //Input: a RequesterKeyagree parameter that has successfully intitated the do-phase of agreement
     //Output: a byte array containing the shared key
