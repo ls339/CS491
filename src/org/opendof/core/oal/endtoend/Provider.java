@@ -63,6 +63,15 @@ public class Provider {
     public void setDelay(int _delay){
         delay = _delay;
     }
+    //By Saad, 
+    //Input: a ProviderKeyagree parameter that has successfully intitated the do-phase of agreement
+    //Output: a byte array containing the shared key
+      public byte[] gen_shared_secret(byte[] providerKeyAgree) {
+        
+         byte[] providerSharedSecret = providerKeyAgree.generateSecret();
+         return providerSharedSecret; 
+    }
+    
     
     private class ProviderListener extends DOFObject.DefaultProvider {
     	/*
