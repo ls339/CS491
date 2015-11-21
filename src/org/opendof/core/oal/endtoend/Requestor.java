@@ -192,7 +192,7 @@ public class Requestor {
     //Input: Provider's EncodedPubkey as a byte[]
     //Output: provider's PubKey
     //Calrify how we are going to save/return the providerPubKey
-    public PublicKey getPubKey(byte[] providerPubKeyEnc) //add this method to interface ?
+    public PublicKey getproviderPubKey(byte[] providerPubKeyEnc) //add this method to interface ?
     {
         
           KeyFactory requestorKeyFac = KeyFactory.getInstance("DH"); //Get Key specifications from key
@@ -205,7 +205,7 @@ public class Requestor {
     //Clarify if this should be part of some driving program
     KeyAgreement requestorKeyAgree = KeyAgreement.getInstance("DH"); //Create a key exchange Agreement of the "DH" parameter
     SEND_ENCODED_PUB_KEY(requestorKeyAgree); // At this point requestorKeyAgree is populated
-    PublicKey providerPubKey= getPubKey(BlobPubKey); // Pass the ProviderPubKeyblod to the the function that extracts public key from it
+    PublicKey providerPubKey= getproviderPubKey(BlobPubKey); // Pass the ProviderPubKeyblod to the the function that extracts public key from it
 	requestorKeyAgree.doPhase(providerPubKey, true); //Pass the providerPubKey to the KeyAgreement
      
     //Input: a RequesterKeyagree parameter that has successfully intitated the do-phase of agreement
