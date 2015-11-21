@@ -14,7 +14,7 @@ workflow: est session - key neg - construct obj to gen ciphers - attach on both 
 // provider - dofrequest.session created when session request received. call setdatatransform here
 
 //@Override | TODO Pass in aesDecryptCipher? | TODO pass as input shared secret? or no?
-public useCipherInputStream(InputStream in, Cipher aesDecryptCipher)
+public useCipherInputStream(ByteArrayInputStream in, Cipher aesDecryptCipher)
 {
 	sharedSecret = receiverSharedSecret;
 	aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //MUST specify an IV and distribute to both sides
@@ -27,7 +27,7 @@ public useCipherInputStream(InputStream in, Cipher aesDecryptCipher)
 
 //create ciphers in initialized method or constructor - class level private variables
 //@Override | TODO what do we pass in?
-public useCipherOutputStream(OutputStream os, Cipher aesEncryptCipher)
+public useCipherOutputStream(ByteArrayOutputStream os, Cipher aesEncryptCipher)
 {
 	sharedSecret = receiverSharedSecret;
 	aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -45,7 +45,7 @@ public transformSendData(DOFInterfaceID interfaceID, byte[] data) //Data transfo
 	//SecretKey sharedSecret = receiverSharedSecret;
 	//------------------------------------------------------------------
 	//use the cipher method to create the cipher and init AES encryption
-	CipherOutputStream cos = useCipherOutputStream(OutputStream os, Cipher aesEncryptCipher);
+	CipherOutputStream cos = useCipherOutputStream(ByteArrayOutputStream os, Cipher aesEncryptCipher);
 	//TODO - doFinal not called with stream cipher?
 	//byte[] byteCipherData = aesEncryptCipher.doFinal(data); //convert to cipher data
 	//cos.write(byteCipherData); //write the cipher data to the cipher stream
@@ -63,7 +63,7 @@ public transformReceiveData(DOFInterfaceID interfaceID, byte[] data)
 	//SecretKey sharedSecret = receiverSharedSecret;
 	//------------------------------------------------------------------
 	//use the cipher method to create the cipher and init AES encryption
-	CipherInputStream cis = useCipherInputStream(InputStream os, Cipher aesDecryptCipher);
+	CipherInputStream cis = useCipherInputStream(ByteArrayInputStream os, Cipher aesDecryptCipher);
 	//TODO - doFinal not called with stream Cipher??
 	//byte[] bytePlainData = aesDecryptCipher.doFinal(data); //convert cipher data to plain data
 	//cis.read(bytePlainData); //use the cipher stream to read the data
