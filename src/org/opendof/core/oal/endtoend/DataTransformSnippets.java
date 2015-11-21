@@ -46,7 +46,8 @@ public transformSendData(DOFInterfaceID interfaceID, byte[] data) //Data transfo
 	//------------------------------------------------------------------
 	//use the cipher method to create the cipher and init AES encryption
 	CipherOutputStream cos = useCipherOutputStream(OutputStream os, Cipher aesEncryptCipher);
-	byte[] byteCipherData = aesEncryptCipher.doFinal(data); //convert to cipher data
+	//TODO - doFinal not called with stream cipher?
+	//byte[] byteCipherData = aesEncryptCipher.doFinal(data); //convert to cipher data
 	cos.write(byteCipherData); //write the cipher data to the cipher stream
 	//------------------------------------------------------------------
 	//now send the cipher text across the session (This occurs outside this method)
@@ -61,7 +62,8 @@ public transformReceiveData(DOFInterfaceID interfaceID, byte[] data)
 	//------------------------------------------------------------------
 	//use the cipher method to create the cipher and init AES encryption
 	CipherInputStream cis = useCipherInputStream(InputStream os, Cipher aesDecryptCipher);
-	byte[] bytePlainData = aesDecryptCipher.doFinal(data); //convert cipher data to plain data
+	//TODO - doFinal not called with stream Cipher??
+	//byte[] bytePlainData = aesDecryptCipher.doFinal(data); //convert cipher data to plain data
 	cis.read(bytePlainData); //use the cipher stream to read the data
 	//------------------------------------------------------------------
 	//now send the decrypted data back to application (find out where this occurs)
