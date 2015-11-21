@@ -188,6 +188,15 @@ public class Requestor {
         }
     }
     
+     //By Saad, 
+    //Input: a RequesterKeyagree parameter that has successfully intitated the do-phase of agreement
+    //Output: a byte array containing the shared key
+    public byte[] gen_shared_secret(byte[] requestorKeyAgree) {
+        
+         byte[] requestorSharedSecret = requestorKeyAgree.generateSecret();
+         return requesterSharedSecret; 
+    }
+    
     public byte[] gen_shared_secret(byte[] encPubKey) {
     	// Decode pub key
     	// Key agreement do phase
