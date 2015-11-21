@@ -3,6 +3,23 @@ package org.opendof.core.oal.endtoend;
 import java.util.Date;
 import java.util.List;
 
+
+import java.util.ArrayList;
+import java.util.HashMap;;
+import java.util.Map;
+// ETE
+import java.math.BigInteger;
+import java.security.KeyPair;
+import javax.crypto.KeyAgreement;
+import java.security.AlgorithmParameterGenerator;
+import java.security.AlgorithmParameters;
+import java.security.KeyPairGenerator;
+import javax.crypto.spec.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidParameterSpecException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+
 import org.opendof.core.oal.DOFNotSupportedException;
 import org.opendof.core.oal.DOFObject;
 import org.opendof.core.oal.DOFObjectID;
@@ -64,14 +81,15 @@ public class Provider {
         delay = _delay;
     }
     //By Saad, 
-      public PublicKey getrequestorPubKey(byte[] requestorPubKeyEnc)
+      public PublicKey decodePubKey(byte[] requestorPubKeyEnc)
     {
           KeyFactory providerKeyFac = KeyFactory.getInstance("DH");  //Get Key specifications from key
           X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(requestorPubKeyEnc); //Create Key
           PublicKey requestorPubKey = providerKeyFac.generatePublic(x509KeySpec); //Get public key
+          return requestorPubKey;
         }
      
-    PublicKey requestorPubKey= getrequestorPubKey(BlobPubKey); //assuming we recieve requestorPubKey Blob here
+    PublicKey requestorPubKey= decodePubKey(BlobPubKey); //assuming we recieve requestorPubKey Blob here
     
       // ETE SEND_ENCODED_PUB_KEY Method
       //Clarify about throws
