@@ -192,7 +192,7 @@ public class Requestor {
     //Input: Provider's EncodedPubkey as a byte[]
     //Output: provider's PubKey
     //Calrify how we are going to save/return the providerPubKey
-    public PublicKey getproviderPubKey(byte[] providerPubKeyEnc) //add this method to interface ?
+    public PublicKey getproviderPubKey(byte[] providerPubKeyEnc)
     {
         
           KeyFactory requestorKeyFac = KeyFactory.getInstance("DH"); //Get Key specifications from key
