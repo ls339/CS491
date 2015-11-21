@@ -146,13 +146,13 @@ public class Requestor {
     }
    
     // ETE SEND_ENCODED_PUB_KEY Method
-    public void send_key(KeyAgreement myKeyAgreement) 
+    public void SEND_ENCODED_PUB_KEY(KeyAgreement myKeyAgreement) 
     		throws NoSuchAlgorithmException,InvalidParameterSpecException, 
     		InvalidAlgorithmParameterException, InvalidKeyException {
         try{
         	DHParameterSpec dhSkipParamSpec;
         	AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
-        	paramGen.init(1024); //change to 2048
+        	paramGen.init(2048); 
         	AlgorithmParameters params = paramGen.generateParameters(); 
         	dhSkipParamSpec = (DHParameterSpec) params.getParameterSpec(DHParameterSpec.class); 
         	KeyPairGenerator requestorKpairGen = KeyPairGenerator.getInstance("DH");
@@ -187,8 +187,27 @@ public class Requestor {
             //return null;
         }
     }
+    // By Saad,
+    // Once you reciev a response Blob from provider, we need to extract the public key from it for keyagreement
+    //Input: Provider's EncodedPubkey as a byte[]
+    //Output: provider's PubKey
+    //Calrify how we are going to save/return the providerPubKey
+    public PublicKey getproviderPubKey(byte[] providerPubKeyEnc)
+    {
+        
+          KeyFactory requestorKeyFac = KeyFactory.getInstance("DH"); //Get Key specifications from key
+          X509EncodedKeySpec x509KeySpec1 = new X509EncodedKeySpec(providerPubKeyEnc); //Create Key
+          PublicKey providerPubKey = requestorKeyFac.generatePublic(x509KeySpec1); //Get public key
+        
+    }
     
-     //By Saad, 
+    // Seperating Keyagreement logic and sending keys as discussed with louis
+    //Clarify if this should be part of some driving program
+    KeyAgreement requestorKeyAgree = KeyAgreement.getInstance("DH"); //Create a key exchange Agreement of the "DH" parameter
+    SEND_ENCODED_PUB_KEY(requestorKeyAgree); // At this point requestorKeyAgree is populated
+    PublicKey providerPubKey= getproviderPubKey(BlobPubKey); // Pass the ProviderPubKeyblod to the the function that extracts public key from it
+	requestorKeyAgree.doPhase(providerPubKey, true); //Pass the providerPubKey to the KeyAgreement
+     
     //Input: a RequesterKeyagree parameter that has successfully intitated the do-phase of agreement
     //Output: a byte array containing the shared key
     public byte[] gen_shared_secret(byte[] requestorKeyAgree) {
@@ -197,13 +216,13 @@ public class Requestor {
          return requesterSharedSecret; 
     }
     
-    public byte[] gen_shared_secret(byte[] encPubKey) {
+    /*public byte[] gen_shared_secret(byte[] encPubKey) {
     	// Decode pub key
     	// Key agreement do phase
     	// generate shared secret
     	// return shared secret
     	return new byte[0]; // Place holder
-    }
+    } */
     
     public void init_data_transform() {
     	
