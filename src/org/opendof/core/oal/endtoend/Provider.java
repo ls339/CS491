@@ -89,7 +89,7 @@ public class Provider {
           return requestorPubKey;
         }
      
-    PublicKey requestorPubKey= decodePubKey(BlobPubKey); //assuming we recieve requestorPubKey Blob here
+    
     
       // ETE SEND_ENCODED_PUB_KEY Method
       //Clarify about throws
@@ -241,6 +241,7 @@ public class Provider {
         	byte[] key = DOFType.asBytes(parameters.get(0));
             
             // Do app logic
+            PublicKey requestorPubKey= decodePubKey(BlobPubKey); //assuming we recieve requestorPubKey Blob here
             DOFBoolean myDOFBoolean = new DOFBoolean(isActive);
             
             if(delay > 0){
