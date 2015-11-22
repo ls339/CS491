@@ -91,6 +91,13 @@ public class Provider {
     	}
     }
     
+    public byte[] genSharedSecret(KeyAgreement myKeyAgreement, PublicKey pubKey) 
+    		throws InvalidKeyException {   
+    	myKeyAgreement.doPhase(pubKey, true);
+        byte[] sharedSecret = myKeyAgreement.generateSecret();
+        return sharedSecret; 
+   }
+    
     private class ProviderListener extends DOFObject.DefaultProvider {
     	/*
          * Trap BeginSession here
@@ -205,6 +212,10 @@ public class Provider {
         		
         		request.respond(BlobPubKey);
         		
+        		byte[] sharedSecret = genSharedSecret(myKeyAgree,pubKey);
+        		
+        		// Data Transform at this point
+        		
         	} catch(NoSuchAlgorithmException e) {
         		// Need to handle exception
         	} catch(InvalidKeySpecException e) {
@@ -214,8 +225,6 @@ public class Provider {
         	} catch(InvalidKeyException e) {
         		// Need to handle exception
         	}
-        	// Get dh params from requestor key
-        	
         	
             DOFBoolean myDOFBoolean = new DOFBoolean(isActive);
             
@@ -231,7 +240,7 @@ public class Provider {
             
             //request.respond(myDOFBoolean); // respond with another blob
             //request.respond(BlobPubKey);
-            lastOp = "invoke";
+            //lastOp = "invoke";
         }
     }
 }

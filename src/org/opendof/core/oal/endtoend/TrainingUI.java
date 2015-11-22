@@ -58,6 +58,28 @@ public class TrainingUI extends JFrame {
 
     JPanel pnlAsnychRequestor;
     
+    // set ETE visual elements
+    JPanel pnlETEBeginSet;
+    JRadioButton btnETEBeginSetTrue;
+    JRadioButton btnETEBeginSetFalse;
+    ButtonGroup setETEBeginButtonGroup;
+    JLabel lblETEBeginSetResults;
+    JLabel lblETEBeginSetResults2;
+    JButton btnETEBeginSetOp;
+    
+    //get ETE visual elements
+    JPanel pnlETEBeginGet;
+    JButton btnETEBeginGetOp;
+    JLabel lblETEBeginGetResults;
+    JLabel lblETEBeginGetResults2;
+    
+    //invoke ETE visual elements
+    JPanel pnlETEBeginInvoke;
+    JLabel lblETEBeginCurrentTime;
+    JButton btnETEBeginInvokeOp;
+    JLabel lblETEBeginInvokeResults;
+    JLabel lblETEBeginInvokeResults2;
+    
     //Set visual elements
     JPanel pnlBeginSet;
     JRadioButton btnBeginSetTrue;
@@ -131,7 +153,7 @@ public class TrainingUI extends JFrame {
         
         pnlRequestor = new JPanel();
         pnlRequestor.setBounds(23, 10, 250, 500);
-        TitledBorder borderRequestor = BorderFactory.createTitledBorder("+Session Requestor+");
+        TitledBorder borderRequestor = BorderFactory.createTitledBorder("Start Session");
         borderRequestor.setTitleFont(defaultFont);
         pnlRequestor.setBorder(borderRequestor);
         pnlRequestor.setLayout(null);
@@ -302,10 +324,117 @@ public class TrainingUI extends JFrame {
         //Asynch visual elements
         pnlAsnychRequestor = new JPanel();
         pnlAsnychRequestor.setBounds(278, 10, 270, 500);
-        TitledBorder borderAsynchRequestor = BorderFactory.createTitledBorder("+Asynchronous Requestor+");
+        TitledBorder borderAsynchRequestor = BorderFactory.createTitledBorder("Asynchronous end-to-end Requestor");
         borderAsynchRequestor.setTitleFont(defaultFont);
         pnlAsnychRequestor.setBorder(borderAsynchRequestor);
         pnlAsnychRequestor.setLayout(null);
+        
+        //Begin get ETE visual elements        
+        pnlETEBeginGet = new JPanel();
+        pnlETEBeginGet.setBounds(17, 20, 230, 105);
+        TitledBorder borderETEBeginGetOp = BorderFactory.createTitledBorder("Begin Get end-to-end operation");
+        borderETEBeginGetOp.setTitleFont(defaultFont);
+        pnlETEBeginGet.setBorder(borderETEBeginGetOp);
+        pnlETEBeginGet.setLayout(null);
+        
+        btnETEBeginGetOp = new JButton("<html><center>MyRequestor.BeginGet() ETE<br>&lt;--&nbsp;&lt;--</center></html>");
+        btnETEBeginGetOp.addActionListener(actionListener);
+        btnETEBeginGetOp.setFont(defaultFont);
+        btnETEBeginGetOp.setMargin(new Insets(0, 0, 0, 0));
+        btnETEBeginGetOp.setIconTextGap(0);
+        btnETEBeginGetOp.setVerticalTextPosition(AbstractButton.CENTER);
+        btnETEBeginGetOp.setHorizontalTextPosition(AbstractButton.CENTER);
+        btnETEBeginGetOp.setBounds(20, 20, 150, 35);
+        btnETEBeginGetOp.setEnabled(false); // Disable button
+        
+        lblETEBeginGetResults = new JLabel("Provider 1 Last retieved value:  Undefined");
+        lblETEBeginGetResults.setFont(defaultFont);
+        lblETEBeginGetResults.setBounds(20, 60, 200, 20);
+
+        lblETEBeginGetResults2 = new JLabel("Provider 2 Last retieved value:  Undefined");
+        lblETEBeginGetResults2.setFont(defaultFont);
+        lblETEBeginGetResults2.setBounds(20, 80, 200, 20);
+        
+        pnlETEBeginGet.add(btnETEBeginGetOp);
+        pnlETEBeginGet.add(lblETEBeginGetResults);
+        pnlETEBeginGet.add(lblETEBeginGetResults2);
+        
+        // Begin set ETE visual elements
+        pnlETEBeginSet = new JPanel();
+        pnlETEBeginSet.setBounds(17, 135, 230, 155);
+        TitledBorder borderETEBeginSetOp = BorderFactory.createTitledBorder("Begin Set end-to-end operation");
+        borderETEBeginSetOp.setTitleFont(defaultFont);
+        pnlETEBeginSet.setBorder(borderETEBeginSetOp);
+        pnlETEBeginSet.setLayout(null);
+        
+        btnETEBeginSetTrue = new JRadioButton("True");
+        btnETEBeginSetTrue.addActionListener(actionListener);
+        btnETEBeginSetTrue.setFont(defaultFont);
+        btnETEBeginSetTrue.setBounds(20, 20, 100, 20);
+        
+        btnETEBeginSetFalse = new JRadioButton("False");
+        btnETEBeginSetFalse.addActionListener(actionListener);
+        btnETEBeginSetFalse.setFont(defaultFont);
+        btnETEBeginSetFalse.setBounds(20, 45, 100, 20);
+        
+        setETEBeginButtonGroup = new ButtonGroup();
+        setETEBeginButtonGroup.add(btnETEBeginSetTrue);
+        setETEBeginButtonGroup.add(btnETEBeginSetFalse);
+        
+        btnETEBeginSetOp = new JButton("<html><center>MyRequestor.BeginSet() ETE<br>&raquo;&nbsp;&raquo;</center></html>");
+        btnETEBeginSetOp.setEnabled(false);
+        btnETEBeginSetOp.addActionListener(actionListener);
+        btnETEBeginSetOp.setFont(defaultFont);
+        btnETEBeginSetOp.setMargin(new Insets(0, 0, 0, 0));
+        btnETEBeginSetOp.setBounds(20, 70, 150, 35);
+        
+        lblETEBeginSetResults = new JLabel();
+        lblETEBeginSetResults.setText("Provider 1 Last Set operation:  Undefined");
+        lblETEBeginSetResults.setFont(defaultFont);
+        lblETEBeginSetResults.setBounds(20, 110, 200, 20);
+        
+        lblETEBeginSetResults2 = new JLabel();
+        lblETEBeginSetResults2.setText("Provider 2 Last Set operation:  Undefined");
+        lblETEBeginSetResults2.setFont(defaultFont);
+        lblETEBeginSetResults2.setBounds(20, 130, 200, 20);
+        
+        pnlETEBeginSet.add(btnETEBeginSetTrue);
+        pnlETEBeginSet.add(btnETEBeginSetFalse);
+        pnlETEBeginSet.add(btnETEBeginSetOp);
+        pnlETEBeginSet.add(lblETEBeginSetResults);
+        pnlETEBeginSet.add(lblETEBeginSetResults2);
+        
+        //invoke ETE visual elements
+        pnlETEBeginInvoke = new JPanel();
+        pnlETEBeginInvoke.setBounds(15, 300, 230, 160);
+        TitledBorder borderETEBeginInvokeOp = BorderFactory.createTitledBorder("Begin Invoke end-to-end operation");
+        borderETEBeginInvokeOp.setTitleFont(defaultFont);
+        pnlETEBeginInvoke.setBorder(borderETEBeginInvokeOp);
+        pnlETEBeginInvoke.setLayout(null);
+
+        lblETEBeginCurrentTime = new JLabel(DateFormat.getTimeInstance().format(new Date()));
+        lblETEBeginCurrentTime.setBounds(20, 20, 150, 30);
+        lblETEBeginCurrentTime.setFont(defaultFont);
+        
+        btnETEBeginInvokeOp = new JButton("<html><center>&raquo;&nbsp;&raquo;<br>MyRequestor.BeginInvoke() ETE<br>&laquo;&nbsp;&laquo;</center></html>");
+        btnETEBeginInvokeOp.addActionListener(actionListener);
+        btnETEBeginInvokeOp.setFont(defaultFont);
+        btnETEBeginInvokeOp.setMargin(new Insets(0, 0, 0, 0));
+        btnETEBeginInvokeOp.setBounds(20, 55, 150, 50);
+        btnETEBeginInvokeOp.setEnabled(false);
+        
+        lblETEBeginInvokeResults = new JLabel("Provider 1 Last returned value:  Undefined");
+        lblETEBeginInvokeResults.setFont(defaultFont);
+        lblETEBeginInvokeResults.setBounds(20, 110, 200, 20);
+        
+        lblETEBeginInvokeResults2 = new JLabel("Provider 2 Last returned value:  Undefined");
+        lblETEBeginInvokeResults2.setFont(defaultFont);
+        lblETEBeginInvokeResults2.setBounds(20, 130, 200, 20);
+
+        pnlETEBeginInvoke.add(lblETEBeginCurrentTime);
+        pnlETEBeginInvoke.add(btnETEBeginInvokeOp);
+        pnlETEBeginInvoke.add(lblETEBeginInvokeResults);
+        pnlETEBeginInvoke.add(lblETEBeginInvokeResults2);
         
         //Begin get visual elements        
         pnlBeginGet = new JPanel();
@@ -502,9 +631,12 @@ public class TrainingUI extends JFrame {
         */
         // End-To-End 
         
-        pnlAsnychRequestor.add(pnlBeginSet);
-        pnlAsnychRequestor.add(pnlBeginGet);
-        pnlAsnychRequestor.add(pnlBeginInvoke);        
+        //pnlAsnychRequestor.add(pnlBeginSet);
+        //pnlAsnychRequestor.add(pnlBeginGet);
+        //pnlAsnychRequestor.add(pnlBeginInvoke);        
+        pnlAsnychRequestor.add(pnlETEBeginSet);
+        pnlAsnychRequestor.add(pnlETEBeginGet);
+        pnlAsnychRequestor.add(pnlETEBeginInvoke); 
         
         this.setLayout(null);
         this.setBounds(30,30, 753, 550);
@@ -703,8 +835,12 @@ public class TrainingUI extends JFrame {
             // ETE
             }else if(e.getSource().equals(btnBeginSession)) {
             	lblSessionResults.setText("Session Enabled: True");
-            } else if(e.getSource().equals(btnProviderTrue)) {
-            	btnBeginGetOp.setEnabled(true);
+            	//btnBeginGetOp.setEnabled(true);
+            } else if(e.getSource().equals(btnETESession)) {
+            	lblETESession.setText("Session Enabled: True");
+            	btnETEBeginGetOp.setEnabled(true);
+            	btnETEBeginSetOp.setEnabled(true);
+            	btnETEBeginInvokeOp.setEnabled(true);
             // ETE
             } else if(e.getSource().equals(btnProviderTrue)){
                 provider.setActive(true);
