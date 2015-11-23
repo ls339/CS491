@@ -48,7 +48,7 @@ public CipherOutputStream useCipherOutputStream(ByteArrayOutputStream os, Cipher
 
 //Data transform encapsulates the cipher streams
 @Override
-public transformSendData(DOFInterfaceID interfaceID, byte[] data) //constructor override
+public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)
 {
 	//receiverSharedSecret saved outside this method
 	SecretKey sharedSecret = receiverSharedSecret;
@@ -70,7 +70,7 @@ public transformSendData(DOFInterfaceID interfaceID, byte[] data) //constructor 
 }
 
 @Override
-public transformReceiveData(DOFInterfaceID interfaceID, byte[] data) //constructor override
+public byte[] transformReceiveData(DOFInterfaceID interfaceID, byte[] data)
 {
 	//receiverSharedSecret saved outside this method
 	SecretKey sharedSecret = receiverSharedSecret;
