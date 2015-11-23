@@ -4,13 +4,24 @@ import javax.crypto.interfaces.DHPublicKey;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyAgreement;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.SecureRandom;
+
 import javax.crypto.spec.DHParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.InvalidKeyException;
 import java.security.spec.X509EncodedKeySpec;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.util.Date;
 import java.util.List;
@@ -90,6 +101,66 @@ public class Provider {
     		return null;
     	}
     }
+    
+    // Data Transform Stuff
+    public CipherInputStream useCipherInputStream(SecretKey sharedSecret, SecureRandom iv, ByteArrayInputStream in, Cipher aesDecryptCipher) 
+    		throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException {
+    	
+    	//sharedSecret = receiverSharedSecret;
+    	aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //MUST specify an IV and distribute to both sides
+    	aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
+    	CipherInputStream cis = new CipherInputStream(in, aesDecryptCipher);
+    	return cis;
+    }
+    public CipherOutputStream useCipherOutputStream(SecretKey sharedSecret, SecureRandom iv, ByteArrayOutputStream os, Cipher aesEncryptCipher) 
+    		throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException {
+    	
+    	//sharedSecret = receiverSharedSecret;
+    	aesEncryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+    	aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
+    	CipherOutputStream cos = new CipherOutputStream(os, aesEncryptCipher);
+    	return cos; 
+    }
+    
+    /*
+    @Override
+    public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)  {
+    	//receiverSharedSecret generated outside this method
+    	//SecretKey sharedSecret = receiverSharedSecret;
+    	//------------------------------------------------------------------
+    	//use the cipher method to create the cipher and init AES encryption
+    	CipherOutputStream cos = useCipherOutputStream(ByteArrayOutputStream os, Cipher aesEncryptCipher);
+    	//TODO - doFinal not called with stream cipher?
+    	//byte[] byteCipherData = aesEncryptCipher.doFinal(data); //convert to cipher data
+    	//cos.write(byteCipherData); //write the cipher data to the cipher stream
+    	//------------------------------------------------------------------
+    	//now send the cipher text across the session (This occurs outside this method)
+    	//return byteCipherData; //what do we return?
+    	byte[] byteCipherData = cos.write(data);
+    	return byteCipherData;
+    }
+
+    public void sendBeginGetRequest() {
+    	activeGetOperation = broadcastObject.beginGet(TBAInterface.PROPERTY_ALARM_ACTIVE, TIMEOUT, new GetListener());
+    }
+    @Override
+    public transformReceiveData(DOFInterfaceID interfaceID, byte[] data) 
+    {
+    	//receiverSharedSecret generated outside this method
+    	//SecretKey sharedSecret = receiverSharedSecret;
+    	//------------------------------------------------------------------
+    	//use the cipher method to create the cipher and init AES encryption
+    	CipherInputStream cis = useCipherInputStream(ByteArrayInputStream os, Cipher aesDecryptCipher);
+    	//TODO - doFinal not called with stream Cipher??
+    	//byte[] bytePlainData = aesDecryptCipher.doFinal(data); //convert cipher data to plain data
+    	//cis.read(bytePlainData); //use the cipher stream to read the data
+    	//------------------------------------------------------------------
+    	//now send the decrypted data back to application (find out where this occurs)
+    	//return bytePlainData;
+    	byte[] bytePlainData = cis.read(data);
+    	return bytePlainData;
+    }
+    */
     
     public byte[] genSharedSecret(KeyAgreement myKeyAgreement, PublicKey pubKey) 
     		throws InvalidKeyException {   
