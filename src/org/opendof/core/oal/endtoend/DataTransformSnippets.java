@@ -13,7 +13,7 @@
 // requester - session operation returned, dofoperation.session returned when session created
 // provider - dofrequest.session created when session request received. call setdatatransform here
 
-public Cipher getDecryptCipher(Cipher inCipher, SecretKey sharedSecret, IvParameterSpec iv)
+public Cipher createDecryptCipher(Cipher inCipher, SecretKey sharedSecret, IvParameterSpec iv)
 {
 	try {
 		Cipher aesDecryptCipher = inCipher;
@@ -28,7 +28,7 @@ public Cipher getDecryptCipher(Cipher inCipher, SecretKey sharedSecret, IvParame
 }
 
 //create ciphers in initialized method or constructor - class level private variables
-public Cipher getEncryptCipher(Cipher inCipher, SecretKey sharedSecret, IvParameterSpec iv)
+public Cipher createEncryptCipher(Cipher inCipher, SecretKey sharedSecret, IvParameterSpec iv)
 {
 	try {
 		Cipher aesEncryptCipher = inCipher;
