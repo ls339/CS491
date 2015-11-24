@@ -56,17 +56,12 @@ public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)
 	ByteArrayOutputStream os;
 	Cipher aesEncryptCipher;
 	CipherOutputStream cos;
-	try{
-		cos = useCipherOutputStream(os, aesEncryptCipher, sharedSecret, iv);
-	}
-	catch(NullPointerException e){
-		//TODO what to do if null | throw DOFException
-	}
-	//TODO - doFinal not called with stream cipher?
-	//byte[] byteCipherData = aesEncryptCipher.doFinal(data); //convert to cipher data
+
+	cos = useCipherOutputStream(os, aesEncryptCipher, sharedSecret, iv);
+	
 	byte[] byteCipherData = data;
 	cos.write(byteCipherData);
-	cos.close();
+	cos.close(); //this calls doFinal()
 	return byteCipherData;
 }
 
@@ -79,14 +74,10 @@ public byte[] transformReceiveData(DOFInterfaceID interfaceID, byte[] data)
 	ByteArrayInputStream is;
 	Cipher aesDecryptCipher;
 	CipherInputStream cis;
-	try {
-		cis = useCipherInputStream(is, aesDecryptCipher, sharedSecret, iv);
-	}
-	catch(NullPointerException e){
-		//TODO what to do if null | throw DOFException
-	}
-	//TODO - doFinal not called with stream Cipher??
-	//byte[] bytePlainData = aesDecryptCipher.doFinal(data); //convert cipher data to plain data
+
+	cis = useCipherInputStream(is, aesDecryptCipher, sharedSecret, iv);
+
+	//TODO - doFinal not called with stream input Cipher??
 	byte[] bytePlainData;
 	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	while(cis.read(data) != -1)
