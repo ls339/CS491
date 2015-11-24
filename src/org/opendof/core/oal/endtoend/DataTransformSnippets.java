@@ -66,6 +66,7 @@ public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)
 	//byte[] byteCipherData = aesEncryptCipher.doFinal(data); //convert to cipher data
 	byte[] byteCipherData = data;
 	cos.write(byteCipherData);
+	cos.close();
 	return byteCipherData;
 }
 
