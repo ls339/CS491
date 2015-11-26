@@ -1,6 +1,8 @@
+//These three must be created before the key exchange
 private DataTransform dataTransform = ETE_DATA_TRANSFORM;
 private SecretKey secKey;
 private IvParameterSpec initializationVector;
+//These three must be created before the key exchange
 
 public static DefaultDataTransform ETE_DATA_TRANSFORM = new Requestor.DefaultDataTransform();
 public static final class DefaultDataTransform implements DataTransform 
