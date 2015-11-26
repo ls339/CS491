@@ -190,7 +190,7 @@ public class Requestor {
     //Data Transform begins here
     @Override
     public void setDataTransform(DataTransform dataTransform) {
-        operation.setDataTransform(dataTransform);
+        requester.setDataTransform(dataTransform);
     }
     
     private DataTransform dataTransform = ETE_DATA_TRANSFORM;
