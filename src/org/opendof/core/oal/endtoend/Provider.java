@@ -241,7 +241,7 @@ public class Requestor {
     //TODO - generate SecretKey sharedSecret
     @Override
     public void setDataTransform(DataTransform dataTransform) {
-        operation.setDataTransform(dataTransform);
+        provider.setDataTransform(dataTransform);
     }
     
     public static DefaultDataTransform ETE_DATA_TRANSFORM = new Requestor.DefaultDataTransform();
