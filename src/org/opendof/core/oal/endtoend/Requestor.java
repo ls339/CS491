@@ -268,21 +268,17 @@ public class Requestor {
     PublicKey providerPubKey= decodeproviderPubKey(ProviderPubKeyBlob); // Pass the ProviderPubKeyblod to the the function that extracts public key from it
     requestorKeyAgree.doPhase(providerPubKey, true); //Pass the providerPubKey to the KeyAgreement
      
-    //Input: a RequesterKeyagree parameter that has successfully intitated the do-phase of agreement
-    //Output: a byte array containing the shared key
+    /**
+     * To generate a shared secret once the key agreement between parties has concluded..
+     * @param requestorKeyAgree A RequesterKeyagree parameter that has successfully intitated the do-phase of agreement.
+     * @return a byte array containing the shared key.
+     */
     public byte[] gen_shared_secret(byte[] requestorKeyAgree) {
         
          byte[] requestorSharedSecret = requestorKeyAgree.generateSecret();
          return requesterSharedSecret; 
     }
     
-    /*public byte[] gen_shared_secret(byte[] encPubKey) {
-    	// Decode pub key
-    	// Key agreement do phase
-    	// generate shared secret
-    	// return shared secret
-    	return new byte[0]; // Place holder
-    } */
     
     public void init_data_transform() {
     	
