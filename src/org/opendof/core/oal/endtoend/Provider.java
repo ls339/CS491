@@ -88,6 +88,13 @@ public class Provider {
         delay = _delay;
     }
     
+      /**
+     * To decode an encoded PublicKey
+     * @param  encPubKey An encoded PublicKey
+     * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
+     * @throws InvalidKeySpecException invalid key specifications
+     * @return a simple PublicKey
+     */
     public PublicKey decodePublicKey(byte[] encPubKey) 
     		throws NoSuchAlgorithmException, InvalidKeySpecException {
     	try {
@@ -162,6 +169,14 @@ public class Provider {
     }
     */
     
+    
+    /**
+     * To generate a shared secret after performing do phase of the KeyAgreement on a PublicKey.
+     * @param  myKeyAgreement A KeyAgreement parameter that has yet to undergo the do-phase.
+     * @param  pubKey A PublicKey on which to perform the KeyAgreement.
+     * @throws Exception invalid PublickKey 
+     * @return a byte array containing the shared secret.
+     */
     public byte[] genSharedSecret(KeyAgreement myKeyAgreement, PublicKey pubKey) 
     		throws InvalidKeyException {   
     	myKeyAgreement.doPhase(pubKey, true);
