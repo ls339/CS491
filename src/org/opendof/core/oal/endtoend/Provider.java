@@ -109,7 +109,18 @@ public class Provider {
     	}
     }
     
-    // Data Transform Stuff
+   
+         /**
+     * To start an encrypted InputStream
+     * @param  sharedSecret The common shared secret agreed between provider and requestor
+     * @param  iv A cipher Initiation vector
+     * @param  in 
+     * @param  aesDecryptCipher The type of cipher being used
+     * @throws NoSuchPaddingException The padding mechanism is requested but is not available in the environment.
+     * @throws InvalidKeyException invalid PublickKey 
+     * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
+     * @return a CipherInputStream
+     */
     public CipherInputStream useCipherInputStream(SecretKey sharedSecret, SecureRandom iv, ByteArrayInputStream in, Cipher aesDecryptCipher) 
     		throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException {
     	
@@ -119,6 +130,18 @@ public class Provider {
     	CipherInputStream cis = new CipherInputStream(in, aesDecryptCipher);
     	return cis;
     }
+    
+    /**
+     * To start an decrypted OutputStream
+     * @param  sharedSecret The common shared secret agreed between provider and requestor
+     * @param  iv A cipher Initiation vector
+     * @param  os 
+     * @param  aesDecryptCipher The type of cipher being used
+     * @throws NoSuchPaddingException The padding mechanism is requested but is not available in the environment.
+     * @throws InvalidKeyException invalid PublickKey 
+     * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
+     * @return a Cipher OutStream
+     */
     public CipherOutputStream useCipherOutputStream(SecretKey sharedSecret, SecureRandom iv, ByteArrayOutputStream os, Cipher aesEncryptCipher) 
     		throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException {
     	
