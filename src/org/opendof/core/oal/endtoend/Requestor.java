@@ -159,6 +159,17 @@ public class Requestor {
     }
    
     // ETE SEND_ENCODED_PUB_KEY Method
+    
+    /**
+     * To send a PublicKey to the provider and recieve their PublicKey.
+     * @param  myKeyAgreement A KeyAgreement parameter that has yet to undergo the do-phase.
+     * @throws Exception the cryptographic algorithm is requested but is not available in the environment.
+     * @throws Exception invalid parameter specifications
+     * @throws Exception invalid or inappropriate algorithm parameters
+     * @throws Exception invalid PublickKey 
+     * @throws Exception invalid key specifications
+     * @return a PublicKey recieved from the provider
+     */
     public PublicKey send_key(KeyAgreement myKeyAgreement) 
     		throws NoSuchAlgorithmException,InvalidParameterSpecException, 
     		InvalidAlgorithmParameterException, InvalidKeyException, InvalidKeySpecException {
@@ -207,6 +218,13 @@ public class Requestor {
     	return pubKey;
     }
     
+    /**
+     * To generate a shared secret after performing do phase of the KeyAgreement on a PublicKey.
+     * @param  myKeyAgreement A KeyAgreement parameter that has yet to undergo the do-phase.
+     * @param  pubKey A PublicKey on which to perform the KeyAgreement.
+     * @throws Exception invalid PublickKey parameter
+     * @return a byte array containing the shared secret.
+     */
     public byte[] genSharedSecret(KeyAgreement myKeyAgreement, PublicKey pubKey) 
     		throws InvalidKeyException {   
     	myKeyAgreement.doPhase(pubKey, true);
