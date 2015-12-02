@@ -163,11 +163,11 @@ public class Requestor {
     /**
      * To send a PublicKey to the provider and recieve their PublicKey.
      * @param  myKeyAgreement A KeyAgreement parameter that has yet to undergo the do-phase.
-     * @throws Exception the cryptographic algorithm is requested but is not available in the environment.
-     * @throws Exception invalid parameter specifications
-     * @throws Exception invalid or inappropriate algorithm parameters
-     * @throws Exception invalid PublickKey 
-     * @throws Exception invalid key specifications
+     * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
+     * @throws InvalidParameterSpecException invalid parameter specifications
+     * @throws InvalidAlgorithmParameterException invalid or inappropriate algorithm parameters
+     * @throws InvalidKeyException invalid PublickKey 
+     * @throws InvalidKeySpecException invalid key specifications
      * @return a PublicKey recieved from the provider
      */
     public PublicKey send_key(KeyAgreement myKeyAgreement) 
@@ -208,14 +208,26 @@ public class Requestor {
         return null;
     }
     
-    
-    // May not be needed 
+     /**
+     * To decode an encoded PublicKey
+     * @param  encPubKey An encoded PublicKey
+     * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
+     * @throws InvalidKeySpecException invalid key specifications
+     * @return a simple PublicKey
+     */
+   
     public PublicKey decodePublicKey(byte[] encPubKey) 
     		throws NoSuchAlgorithmException, InvalidKeySpecException {
+    	try {	    
     	KeyFactory myKeyFactory = KeyFactory.getInstance("DH");
     	X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(encPubKey);
     	PublicKey pubKey = myKeyFactory.generatePublic(x509KeySpec);
     	return pubKey;
+    	} catch(NoSuchAlgorithmException e) {
+    		return null;
+    	} catch(InvalidKeySpecException e) {
+    		return null;
+    	}
     }
     
     /**
