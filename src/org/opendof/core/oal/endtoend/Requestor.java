@@ -247,7 +247,7 @@ public class Requestor {
     
      /**
      * To start an encrypted InputStream
-     * @param  sharedSecret The common shared secret agreed between provided and requestor
+     * @param  sharedSecret The common shared secret agreed between provider and requestor
      * @param  iv A cipher Initiation vector
      * @param  in 
      * @param  aesDecryptCipher The type of cipher being used
