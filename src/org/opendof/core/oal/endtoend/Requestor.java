@@ -409,7 +409,8 @@ public class Requestor {
         @Override
         public void interfaceAdded(Query operation, DOFObjectID oid, DOFInterfaceID iid) {
             DOFObject providerObject = mySystem.createObject(oid);
-            objectMap.put(oid.toStandardString(), providerObject);
+            //begin session here
+            objectMap.put(oid.toStandardString(), providerObject); //sessionOpen before object map
         }
 
         @Override
