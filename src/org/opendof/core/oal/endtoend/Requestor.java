@@ -69,6 +69,11 @@ public class Requestor {
     DOFOperation.Set activeSetOperation = null;
     DOFOperation.Invoke activeInvokeOperation = null;
     
+    private DataTransform dataTransform = ETE_DATA_TRANSFORM; //data transform vars
+    private SecretKey secKey;
+    private IvParameterSpec initializationVector;
+    private Cipher savedEncryptCipher;
+    private Cipher savedDecryptCipher; //end data transform var
     
     int TIMEOUT = 5000;
     
