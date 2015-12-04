@@ -54,7 +54,7 @@ public class Provider {
     private SecretKey secKey;
     private IvParameterSpec initializationVector;
     private Cipher savedEncryptCipher;
-	private Cipher savedDecryptCipher; //end data transform vars
+    private Cipher savedDecryptCipher; //end data transform vars
     
     public Provider(DOFSystem _system, String oidString){
         mySystem = _system;
