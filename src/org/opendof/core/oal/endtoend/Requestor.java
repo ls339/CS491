@@ -256,6 +256,7 @@ public class Requestor {
      * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
      * @return a CipherInputStream
      */
+     /*
     public CipherInputStream useCipherInputStream(SecretKey sharedSecret, SecureRandom iv, ByteArrayInputStream in, Cipher aesDecryptCipher) 
     		throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException {
     	
@@ -264,7 +265,7 @@ public class Requestor {
     	aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
     	CipherInputStream cis = new CipherInputStream(in, aesDecryptCipher);
     	return cis;
-    }
+    }*/
     
       /**
      * To start an decrypted OutputStream
@@ -277,6 +278,7 @@ public class Requestor {
      * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
      * @return a Cipher OutStream
      */
+     /*
     public CipherOutputStream useCipherOutputStream(SecretKey sharedSecret, SecureRandom iv, ByteArrayOutputStream os, Cipher aesEncryptCipher) 
     		throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException {
     	
@@ -285,7 +287,7 @@ public class Requestor {
     	aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
     	CipherOutputStream cos = new CipherOutputStream(os, aesEncryptCipher);
     	return cos; 
-    }
+    }*/
     
     /*
     @Override
@@ -326,6 +328,52 @@ public class Requestor {
     	return bytePlainData;
     }
     */
+    //begin data transform
+    public eteDataTransform ETE_DATA_TRANSFORM = new Requestor.eteDataTransform();
+    public final class eteDataTransform implements DataTransform 
+    {
+    public Cipher createDecryptCipher(Cipher inCipher, SecretKey sharedSecret, IvParameterSpec iv)
+    {
+    	try {
+    		Cipher aesDecryptCipher = inCipher;
+    		aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //MUST specify an IV and distribute to both sides
+    		aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
+    
+    		return aesDecryptCipher;
+    	}
+    	catch(Exception e) {
+    		return null;
+    	}
+    }
+    //create ciphers in initialized method or constructor - class level private variables
+    public Cipher createEncryptCipher(Cipher inCipher, SecretKey sharedSecret, IvParameterSpec iv)
+    {
+    	try {
+    		Cipher aesEncryptCipher = inCipher;
+    		aesEncryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+    		aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
+    
+    		return aesEncryptCipher;
+    	}
+    	catch(Exception e) {
+    		return null;
+    	}
+    }
+    
+    public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)
+    {
+    	Cipher aesEncryptCipher = savedEncryptCipher;
+    	byte[] byteCipherData = aesEncryptCipher.doFinal(data);
+    	return byteCipherData;
+    }
+    @Override
+    public byte[] transformReceiveData(DOFInterfaceID interfaceID, byte[] data)
+    {
+    	Cipher aesDecryptCipher = savedDecryptCipher;
+    	byte[] bytePlainData = aesDecryptCipher.doFinal(data);
+    	return bytePlainData;
+    }
+    } //End of Data Transform
     
     public void sendBeginSetRequest(boolean _active) {
     	DOFBoolean setValue = new DOFBoolean(_active);
