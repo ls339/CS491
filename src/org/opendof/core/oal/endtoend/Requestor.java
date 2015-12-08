@@ -70,8 +70,8 @@ public class Requestor {
     DOFOperation.Invoke activeInvokeOperation = null;
     
     private DataTransform dataTransform = ETE_DATA_TRANSFORM; //data transform vars
-    private SecretKey secKey;
-    private IvParameterSpec initializationVector;
+    private SecretKey savedSecretKey;
+    private IvParameterSpec savedIVSpec;
     private Cipher savedEncryptCipher;
     private Cipher savedDecryptCipher; //end data transform var
     
@@ -179,6 +179,12 @@ public class Requestor {
     		throws NoSuchAlgorithmException,InvalidParameterSpecException, 
     		InvalidAlgorithmParameterException, InvalidKeyException, InvalidKeySpecException {
         try{
+            byte[] iv = new byte[16]; //create the new 256 bit iv to initialize the encryption algorithm
+            SecureRandom random = new SecureRandom();
+            random.nextBytes(iv);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv); //save the iv locally to pass it to the provider
+            savedIVSpec = ivParameterSpec; //save the iv to pass it into the data transform
+            
         	DHParameterSpec dhSkipParamSpec;
         	AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
         	paramGen.init(1024);
@@ -246,6 +252,8 @@ public class Requestor {
     		throws InvalidKeyException {   
     	myKeyAgreement.doPhase(pubKey, true);
         byte[] sharedSecret = myKeyAgreement.generateSecret();
+        //save the secret key as a secret key object in order to pass it in into the data transform
+        savedSecretKey = new SecretKeySpec(sharedSecret, "AES/CBC/PKCS5Padding");
         return sharedSecret; 
    }
     
