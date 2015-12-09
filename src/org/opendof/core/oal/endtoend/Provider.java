@@ -5,9 +5,11 @@ import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyAgreement;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
@@ -17,6 +19,8 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 
 import javax.crypto.spec.DHParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
+
 import java.security.spec.InvalidKeySpecException;
 import java.security.InvalidKeyException;
 import java.security.spec.X509EncodedKeySpec;
@@ -26,9 +30,11 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.Date;
 import java.util.List;
 
+import org.opendof.core.oal.DOFInterfaceID;
 import org.opendof.core.oal.DOFNotSupportedException;
 import org.opendof.core.oal.DOFObject;
 import org.opendof.core.oal.DOFObjectID;
+import org.opendof.core.oal.DOFOperation;
 import org.opendof.core.oal.DOFSystem;
 import org.opendof.core.oal.DOFType;
 import org.opendof.core.oal.DOFValue;
@@ -88,12 +94,12 @@ public class Provider {
         delay = _delay;
     }
     
-      /**
-     * To decode an encoded PublicKey
+    /**
+     * Decodes an encoded PublicKey.
      * @param  encPubKey An encoded PublicKey
      * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
      * @throws InvalidKeySpecException invalid key specifications
-     * @return a simple PublicKey
+     * @return pubKey a simple PublicKey
      */
     public PublicKey decodePublicKey(byte[] encPubKey) 
     		throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -109,8 +115,7 @@ public class Provider {
     	}
     }
     
-   
-         /**
+   /**
      * To start an encrypted InputStream
      * @param  sharedSecret The common shared secret agreed between provider and requestor
      * @param  iv A cipher Initiation vector
@@ -152,47 +157,6 @@ public class Provider {
     	return cos; 
     }
     
-    /*
-    @Override
-    public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)  {
-    	//receiverSharedSecret generated outside this method
-    	//SecretKey sharedSecret = receiverSharedSecret;
-    	//------------------------------------------------------------------
-    	//use the cipher method to create the cipher and init AES encryption
-    	CipherOutputStream cos = useCipherOutputStream(ByteArrayOutputStream os, Cipher aesEncryptCipher);
-    	//TODO - doFinal not called with stream cipher?
-    	//byte[] byteCipherData = aesEncryptCipher.doFinal(data); //convert to cipher data
-    	//cos.write(byteCipherData); //write the cipher data to the cipher stream
-    	//------------------------------------------------------------------
-    	//now send the cipher text across the session (This occurs outside this method)
-    	//return byteCipherData; //what do we return?
-    	byte[] byteCipherData = cos.write(data);
-    	return byteCipherData;
-    }
-
-    public void sendBeginGetRequest() {
-    	activeGetOperation = broadcastObject.beginGet(TBAInterface.PROPERTY_ALARM_ACTIVE, TIMEOUT, new GetListener());
-    }
-    @Override
-    public transformReceiveData(DOFInterfaceID interfaceID, byte[] data) 
-    {
-    	//receiverSharedSecret generated outside this method
-    	//SecretKey sharedSecret = receiverSharedSecret;
-    	//------------------------------------------------------------------
-    	//use the cipher method to create the cipher and init AES encryption
-    	CipherInputStream cis = useCipherInputStream(ByteArrayInputStream os, Cipher aesDecryptCipher);
-    	//TODO - doFinal not called with stream Cipher??
-    	//byte[] bytePlainData = aesDecryptCipher.doFinal(data); //convert cipher data to plain data
-    	//cis.read(bytePlainData); //use the cipher stream to read the data
-    	//------------------------------------------------------------------
-    	//now send the decrypted data back to application (find out where this occurs)
-    	//return bytePlainData;
-    	byte[] bytePlainData = cis.read(data);
-    	return bytePlainData;
-    }
-    */
-    
-    
     /**
      * To generate a shared secret after performing do phase of the KeyAgreement on a PublicKey.
      * @param  myKeyAgreement A KeyAgreement parameter that has yet to undergo the do-phase.
@@ -206,6 +170,76 @@ public class Provider {
         byte[] sharedSecret = myKeyAgreement.generateSecret();
         return sharedSecret; 
    }
+    
+    private Cipher savedEncryptCipher;//= DefaultDataTransform.createEncryptCipher(secKey, initializationVector);
+    public final class DefaultDataTransform implements DOFOperation.Session.DataTransform 
+    {
+    	/**
+    	 * Decrypts cipher.
+    	 * @param sharedSecret generated shared secret.
+    	 * @param iv initialization vector.
+    	 * @return aesDecryptCiper decrypted cipher.
+    	 */
+        public Cipher createDecryptCipher(SecretKey sharedSecret, IvParameterSpec iv)
+        {
+        	try {
+        		Cipher aesDecryptCipher;
+        		aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //MUST specify an IV and distribute to both sides
+        		aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
+
+        		return aesDecryptCipher;
+        	}
+        	catch(Exception e) {
+        		return null;
+        	}
+        }
+        //create ciphers in initialized method or constructor - class level private variables
+        /**
+         * Encrypts cipher.
+         * @param sharedSecret generated shared secret.
+         * @param iv initialization vector.
+         * @return aesEncryptCipher decrypted cipher.
+         */
+        public Cipher createEncryptCipher(SecretKey sharedSecret, IvParameterSpec iv)
+        {
+        	try {
+        		Cipher aesEncryptCipher;
+        		aesEncryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        		aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
+        
+        		return aesEncryptCipher;
+        	}
+        	catch(Exception e) {
+        		return null;
+        	}
+        }
+        public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)
+        {
+        	// Need to get aesEncryptCipher from the DOFObject
+        	Cipher aesEncryptCipher = savedEncryptCipher;
+        	try 
+        	{ 
+        		byte[] byteCipherData = aesEncryptCipher.doFinal(data);
+        		return byteCipherData; 		
+        	} catch (BadPaddingException e) {
+        		return null;
+        	} catch(IllegalBlockSizeException e) {
+        		return null;
+        	}
+        	
+        	//return new byte[0]; // Placeholder
+        }
+        @Override
+        public byte[] transformReceiveData(DOFInterfaceID interfaceID, byte[] data)
+        {
+        	// Need to get aesDecryptCipher from the DOFObject
+        	//Cipher aesDecryptCipher = savedDecryptCipher;
+        	//byte[] bytePlainData = aesDecryptCipher.doFinal(data);
+        	//return bytePlainData;
+        	return new byte[0]; // Placeholder
+        }
+    } 
+
     
     private class ProviderListener extends DOFObject.DefaultProvider {
     	/*

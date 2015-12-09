@@ -2,6 +2,7 @@ package org.opendof.core.oal.endtoend;
 
 import org.opendof.core.oal.DOFInterface;
 import org.opendof.core.oal.DOFInterfaceID;
+import org.opendof.core.oal.DOFObject;
 import org.opendof.core.oal.DOFType;
 import org.opendof.core.oal.value.DOFBlob;
 import org.opendof.core.oal.value.DOFBoolean;
@@ -11,6 +12,10 @@ import java.security.KeyPair;
 
 import javax.crypto.spec.*;
 
+/**
+ * This interface is used to transmit an encoded public key for Diffie-Hellman key exchange.
+ *
+ */
 public class ETEInterface {
 
 	public static final DOFBlob.Type BLOB_KEY = new DOFBlob.Type(256, 256);
@@ -22,8 +27,14 @@ public class ETEInterface {
     public static final int PROPERTY_BLOB_KEY_ID = 1;
     public static final int METHOD_SEND_ENCODED_PUB_KEY_ID = 2;
 
-
-	public static final DOFInterface.Method SEND_ENCODED_PUB_KEY; 
+/**
+ * Used by a requestor to transmit an encoded public key to a provider.
+ * 
+ * @param INIT_VECTOR initialization vector.
+ * @param BLOB_KEY the requestor encoded public key.
+ * @return BLOB_KEY the provider encoded public key.
+ */
+    public static final DOFInterface.Method SEND_ENCODED_PUB_KEY; 
 	
 	static {
     	DEF = new DOFInterface.Builder(IID)

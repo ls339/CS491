@@ -30,6 +30,8 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import java.security.SecureRandom;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 
 import org.opendof.core.oal.endtoend.TBAInterface;
 import org.opendof.core.oal.endtoend.TrainingUI;
@@ -63,7 +65,9 @@ public class Requestor {
     DOFObject currentProvider = null;
     // For end-to-end
     DOFOperation.Session SessionObject = null; 
-    DOFObject.SessionOperationListener operationListener;
+    //DOFObject.SessionOperationListener operationListener;
+    SessionListener sessionListener;
+    //GetListener getOpListener;
     
     DOFOperation.Get activeGetOperation = null;
     DOFOperation.Set activeSetOperation = null;
@@ -86,6 +90,7 @@ public class Requestor {
             .addFilter(TBAInterface.IID)
             .build();
         mySystem.beginQuery(query, new QueryListener());
+        SessionObject = broadcastObject.beginSession(TBAInterface.DEF, ETEInterface.IID, sessionListener);
     }
     
     public void setCurrentRequestor(String _oidString){
@@ -120,12 +125,11 @@ public class Requestor {
          */
         try{
             DOFResult<DOFValue> myResult;
-            DOFResult<DOFValue> otherResult;
+            //DOFResult<DOFValue> otherResult;
             if(currentProvider != null)
             {
             	// end-to-end
-            	SessionObject = currentProvider.beginSession(TBAInterface.DEF, ETEInterface.IID, operationListener);
-
+            	//SessionObject = currentProvider.beginSession(TBAInterface.DEF, ETEInterface.IID, operationListener);
             	myResult = currentProvider.get(TBAInterface.PROPERTY_ALARM_ACTIVE, TIMEOUT);
                 return myResult.asBoolean();
             }
@@ -215,7 +219,6 @@ public class Requestor {
      * @throws InvalidKeySpecException invalid key specifications
      * @return a simple PublicKey
      */
-   
     public PublicKey decodePublicKey(byte[] encPubKey) 
     		throws NoSuchAlgorithmException, InvalidKeySpecException {
     	try {	    
@@ -244,49 +247,76 @@ public class Requestor {
         return sharedSecret; 
    }
     
+    private Cipher savedEncryptCipher;//= DefaultDataTransform.createEncryptCipher(secKey, initializationVector);
     
-     /**
-     * To start an encrypted InputStream
-     * @param  sharedSecret The common shared secret agreed between provider and requestor
-     * @param  iv A cipher Initiation vector
-     * @param  in 
-     * @param  aesDecryptCipher The type of cipher being used
-     * @throws NoSuchPaddingException The padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException invalid PublickKey 
-     * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
-     * @return a CipherInputStream
-     */
-    public CipherInputStream useCipherInputStream(SecretKey sharedSecret, SecureRandom iv, ByteArrayInputStream in, Cipher aesDecryptCipher) 
-    		throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException {
-    	
-    	//sharedSecret = receiverSharedSecret;
-    	aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //MUST specify an IV and distribute to both sides
-    	aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
-    	CipherInputStream cis = new CipherInputStream(in, aesDecryptCipher);
-    	return cis;
-    }
-    
-      /**
-     * To start an decrypted OutputStream
-     * @param  sharedSecret The common shared secret agreed between provider and requestor
-     * @param  iv A cipher Initiation vector
-     * @param  os 
-     * @param  aesDecryptCipher The type of cipher being used
-     * @throws NoSuchPaddingException The padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException invalid PublickKey 
-     * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
-     * @return a Cipher OutStream
-     */
-    public CipherOutputStream useCipherOutputStream(SecretKey sharedSecret, SecureRandom iv, ByteArrayOutputStream os, Cipher aesEncryptCipher) 
-    		throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException {
-    	
-    	//sharedSecret = receiverSharedSecret;
-    	aesEncryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-    	aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
-    	CipherOutputStream cos = new CipherOutputStream(os, aesEncryptCipher);
-    	return cos; 
-    }
-    
+    public final class DefaultDataTransform implements DOFOperation.Session.DataTransform 
+    {
+    	/**
+    	 * Decrypts cipher.
+    	 * @param sharedSecret generated shared secret.
+    	 * @param iv initialization vector.
+    	 * @return aesDecryptCiper decrypted cipher.
+    	 */
+        public Cipher createDecryptCipher(SecretKey sharedSecret, IvParameterSpec iv)
+        {
+        	try {
+        		Cipher aesDecryptCipher;
+        		aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //MUST specify an IV and distribute to both sides
+        		aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
+
+        		return aesDecryptCipher;
+        	}
+        	catch(Exception e) {
+        		return null;
+        	}
+        }
+        //create ciphers in initialized method or constructor - class level private variables
+        /**
+         * Encrypts cipher.
+         * @param sharedSecret generated shared secret.
+         * @param iv initialization vector.
+         * @return aesEncryptCipher decrypted cipher.
+         */
+        public Cipher createEncryptCipher(SecretKey sharedSecret, IvParameterSpec iv)
+        {
+        	try {
+        		Cipher aesEncryptCipher;
+        		aesEncryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        		aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
+        
+        		return aesEncryptCipher;
+        	}
+        	catch(Exception e) {
+        		return null;
+        	}
+        }
+        public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)
+        {
+        	// Need to get aesEncryptCipher from the DOFObject
+        	Cipher aesEncryptCipher = savedEncryptCipher;
+        	try 
+        	{ 
+        		byte[] byteCipherData = aesEncryptCipher.doFinal(data);
+        		return byteCipherData; 		
+        	} catch (BadPaddingException e) {
+        		return null;
+        	} catch(IllegalBlockSizeException e) {
+        		return null;
+        	}
+        	
+        	//return new byte[0]; // Placeholder
+        }
+        @Override
+        public byte[] transformReceiveData(DOFInterfaceID interfaceID, byte[] data)
+        {
+        	// Need to get aesDecryptCipher from the DOFObject
+        	//Cipher aesDecryptCipher = savedDecryptCipher;
+        	//byte[] bytePlainData = aesDecryptCipher.doFinal(data);
+        	//return bytePlainData;
+        	return new byte[0]; // Placeholder
+        }
+    } 
+
     /*
     @Override
     public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)  {
@@ -329,7 +359,10 @@ public class Requestor {
     
     public void sendBeginSetRequest(boolean _active) {
     	DOFBoolean setValue = new DOFBoolean(_active);
-            activeSetOperation = broadcastObject.beginSet(TBAInterface.PROPERTY_ALARM_ACTIVE, setValue, TIMEOUT, new SetListener()); 
+    	//SessionObject = broadcastObject.beginSession(TBAInterface.DEF, ETEInterface.IID, sessionListener);
+    	//SessionObject.setDataTransform(new DefaultDataTransform());
+    	activeSetOperation = broadcastObject.beginSet(TBAInterface.PROPERTY_ALARM_ACTIVE, setValue, TIMEOUT, new SetListener()); 
+            
                
     }
     
@@ -337,7 +370,6 @@ public class Requestor {
     	List<DOFValue> parameters = new ArrayList<DOFValue>();
             DOFDateTime alarmTimeParameter = new DOFDateTime(_alarmTime);
             parameters.add(alarmTimeParameter);
-            
             activeInvokeOperation = broadcastObject.beginInvoke(TBAInterface.METHOD_SET_NEW_TIME, parameters, TIMEOUT, new InvokeListener());
     }
     /*
@@ -349,6 +381,18 @@ public class Requestor {
             activeInvokeOperation = broadcastObject.beginInvoke(TBAInterface.METHOD_SET_NEW_TIME, parameters, TIMEOUT, new InvokeListener());
     }
      */
+    
+    private class SessionListener implements DOFObject.SessionOperationListener
+    {
+    	@Override
+    	public void complete(DOFOperation operation, DOFException exception) {
+    		
+    	}
+    	@Override
+    	public void sessionOpen(DOFOperation.Session operation, DOFProviderInfo providerInfo, DOFObject session, DOFException exception) {
+    		
+    	}
+    }
     
     private class QueryListener implements DOFSystem.QueryOperationListener
     {

@@ -851,7 +851,7 @@ public class TrainingUI extends JFrame {
             } else if(e.getSource().equals(btnProvider2False)){
                 provider2.setActive(false);
             } else if(e.getSource().equals(btnBeginGetOp)) {
-                requestor.sendBeginGetRequest();
+                //requestor.sendBeginGetRequest();
             } else if(e.getSource().equals(btnBeginSetOp)) {
                 boolean setValue;
                 if(btnBeginSetTrue.isSelected())
