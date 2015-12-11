@@ -30,6 +30,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.Date;
 import java.util.List;
 
+import org.opendof.core.oal.DOFInterface;
 import org.opendof.core.oal.DOFInterfaceID;
 import org.opendof.core.oal.DOFNotSupportedException;
 import org.opendof.core.oal.DOFObject;
@@ -52,9 +53,17 @@ public class Provider {
     DOFObjectID myOID = null;
     String lastOp = "undefined";
     int delay = 0;
+    byte[] sharedSecret;
     
     boolean isActive = false;
     Date alarmTime;
+    
+    // This cannot be defined here. DataTransform is not yet defined. -ls339
+    //private DataTransform dataTransform = ETE_DATA_TRANSFORM; //data transform vars
+    private SecretKey savedSecretKey;
+    private IvParameterSpec savedIVSpec;
+    private Cipher savedEncryptCipher;
+    private Cipher savedDecryptCipher; //end data transform var
     
     public Provider(DOFSystem _system, String oidString){
         mySystem = _system;
@@ -114,49 +123,7 @@ public class Provider {
     		return null;
     	}
     }
-    
-   /**
-     * To start an encrypted InputStream
-     * @param  sharedSecret The common shared secret agreed between provider and requestor
-     * @param  iv A cipher Initiation vector
-     * @param  in 
-     * @param  aesDecryptCipher The type of cipher being used
-     * @throws NoSuchPaddingException The padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException invalid PublickKey 
-     * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
-     * @return a CipherInputStream
-     */
-    public CipherInputStream useCipherInputStream(SecretKey sharedSecret, SecureRandom iv, ByteArrayInputStream in, Cipher aesDecryptCipher) 
-    		throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException {
-    	
-    	//sharedSecret = receiverSharedSecret;
-    	aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //MUST specify an IV and distribute to both sides
-    	aesDecryptCipher.init(Cipher.DECRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
-    	CipherInputStream cis = new CipherInputStream(in, aesDecryptCipher);
-    	return cis;
-    }
-    
-    /**
-     * To start an decrypted OutputStream
-     * @param  sharedSecret The common shared secret agreed between provider and requestor
-     * @param  iv A cipher Initiation vector
-     * @param  os 
-     * @param  aesDecryptCipher The type of cipher being used
-     * @throws NoSuchPaddingException The padding mechanism is requested but is not available in the environment.
-     * @throws InvalidKeyException invalid PublickKey 
-     * @throws NoSuchAlgorithmException the cryptographic algorithm is requested but is not available in the environment.
-     * @return a Cipher OutStream
-     */
-    public CipherOutputStream useCipherOutputStream(SecretKey sharedSecret, SecureRandom iv, ByteArrayOutputStream os, Cipher aesEncryptCipher) 
-    		throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException {
-    	
-    	//sharedSecret = receiverSharedSecret;
-    	aesEncryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-    	aesEncryptCipher.init(Cipher.ENCRYPT_MODE, sharedSecret, iv); //iv is the saved IV from encoded public key method
-    	CipherOutputStream cos = new CipherOutputStream(os, aesEncryptCipher);
-    	return cos; 
-    }
-    
+       
     /**
      * To generate a shared secret after performing do phase of the KeyAgreement on a PublicKey.
      * @param  myKeyAgreement A KeyAgreement parameter that has yet to undergo the do-phase.
@@ -171,8 +138,9 @@ public class Provider {
         return sharedSecret; 
    }
     
-    private Cipher savedEncryptCipher;//= DefaultDataTransform.createEncryptCipher(secKey, initializationVector);
-    public final class DefaultDataTransform implements DOFOperation.Session.DataTransform 
+    // We cannot call this here, its being called before the class is defined - ls339
+    //public eteDataTransform ETE_DATA_TRANSFORM = new Requestor.eteDataTransform();
+    public final class eteDataTransform implements DOFOperation.Session.DataTransform 
     {
     	/**
     	 * Decrypts cipher.
@@ -215,7 +183,6 @@ public class Provider {
         }
         public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)
         {
-        	// Need to get aesEncryptCipher from the DOFObject
         	Cipher aesEncryptCipher = savedEncryptCipher;
         	try 
         	{ 
@@ -227,56 +194,25 @@ public class Provider {
         		return null;
         	}
         	
-        	//return new byte[0]; // Placeholder
         }
+        
         @Override
         public byte[] transformReceiveData(DOFInterfaceID interfaceID, byte[] data)
         {
-        	// Need to get aesDecryptCipher from the DOFObject
-        	//Cipher aesDecryptCipher = savedDecryptCipher;
-        	//byte[] bytePlainData = aesDecryptCipher.doFinal(data);
-        	//return bytePlainData;
-        	return new byte[0]; // Placeholder
+        	Cipher aesDecryptCipher = savedDecryptCipher;
+        	try {
+        		byte[] bytePlainData = aesDecryptCipher.doFinal(data);
+            	return bytePlainData;
+        	} catch(BadPaddingException e) {
+        		return null;
+        	} catch(IllegalBlockSizeException e) {
+        		return null;
+        	}	
         }
     } 
-
-    
+  
     private class ProviderListener extends DOFObject.DefaultProvider {
-    	/*
-         * Trap BeginSession here
-         * Override DefaultProvider to trap session callback
-         * Intercept begin provide
-         * if(end-to-end security was requested) then
-       	 * 		Save original interface DEF requested
-         *		Provide end-to-end secure beginProvide
-         * 		myObject.beginProvide(end-to-end security);
-         *		DH key negotiation
-         * 		Return end-to-end secured session object with original interface request.
-         * else 
-         * Let OpenDOF handle the session 
-         * 
-         * JS mentioned that we can copy one of the below methods to use for our function.
-         * 
-         * 
-         * Add a session call 
-        @Override
-        public void get(Provide operation, DOFRequest.Get request, Property property) {
-            DOFBoolean myDOFBoolean = new DOFBoolean(isActive);
-            
-            if(delay > 0){
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                	request.respond(new DOFNotSupportedException("The specified item id is not supported by the specified interface."));
-                    //Specific exceptions are now available and the constructor below is deprecated.
-                    //request.respond(new DOFErrorException(DOFErrorException.APPLICATION_ERROR));
-                }
-            }
-            
-            request.respond(myDOFBoolean);
-            lastOp = "get";
-        }
-         */
+   
         @Override
         public void get(Provide operation, DOFRequest.Get request, Property property) {
             DOFBoolean myDOFBoolean = new DOFBoolean(isActive);
@@ -312,63 +248,41 @@ public class Provider {
             request.respond();
             lastOp = "set";
         }
-        /*
-        @Override
-        public void invoke(Provide operation, DOFRequest.Invoke request, Method method, List<DOFValue> parameters) {
-            alarmTime = DOFType.asDate(parameters.get(0));
-            
-            DOFBoolean myDOFBoolean = new DOFBoolean(isActive);
-            
-            if(delay > 0){
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                	request.respond(new DOFNotSupportedException("The specified item id is not supported by the specified interface."));
-                    //Specific exceptions are now available and the constructor below is deprecated.
-                    //request.respond(new DOFErrorException(DOFErrorException.APPLICATION_ERROR));
-                }
-            }
-            
-            request.respond(myDOFBoolean);
-            lastOp = "invoke";
-        }
-        */
         
         @Override
         public void invoke(Provide operation, DOFRequest.Invoke request, Method method, List<DOFValue> parameters) {
-            // Figure out what method is being called if we have more than one method.
-        	
-        	byte[] initVector = DOFType.asBytes(parameters.get(0));
-        	byte[] encPubKey = DOFType.asBytes(parameters.get(1));
-        	
-            // Do app logic
-        	//byte[] encodedPubKey = DOFType.asBytes(myValueList.get(0));
-        	try {
-        		KeyAgreement myKeyAgree = KeyAgreement.getInstance("DH");
-        		PublicKey pubKey = decodePublicKey(encPubKey);
-        		DHParameterSpec dhParamSpec = ((DHPublicKey)pubKey).getParams();
-        		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DH");
-        		keyPairGen.initialize(dhParamSpec);
-        		KeyPair keyPair = keyPairGen.generateKeyPair();
-        		myKeyAgree.init(keyPair.getPrivate());
-        		DOFBlob BlobPubKey = new DOFBlob(keyPair.getPublic().getEncoded());
-        		
-        		request.respond(BlobPubKey);
-        		
-        		byte[] sharedSecret = genSharedSecret(myKeyAgree,pubKey);
-        		
-        		// Data Transform at this point
-        		
-        	} catch(NoSuchAlgorithmException e) {
-        		// Need to handle exception
-        	} catch(InvalidKeySpecException e) {
-        		// Need to handle exception
-        	} catch(InvalidAlgorithmParameterException e) {
-        		// Need to handle exception
-        	} catch(InvalidKeyException e) {
-        		// Need to handle exception
+            
+        	if(method.getInterface().getInterfaceID() == ETEInterface.IID){
+            	byte[] initVector = DOFType.asBytes(parameters.get(0));
+            	byte[] encPubKey = DOFType.asBytes(parameters.get(1));
+    
+            	try {
+            		KeyAgreement myKeyAgree = KeyAgreement.getInstance("DH");
+            		PublicKey pubKey = decodePublicKey(encPubKey);
+            		DHParameterSpec dhParamSpec = ((DHPublicKey)pubKey).getParams();
+            		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DH");
+            		keyPairGen.initialize(dhParamSpec);
+            		KeyPair keyPair = keyPairGen.generateKeyPair();
+            		myKeyAgree.init(keyPair.getPrivate());
+            		DOFBlob BlobPubKey = new DOFBlob(keyPair.getPublic().getEncoded());
+            		
+            		request.respond(BlobPubKey);
+            		
+            		// Generate our shared secret.
+            		sharedSecret = genSharedSecret(myKeyAgree,pubKey); 		
+            		
+            	} catch(NoSuchAlgorithmException e) {
+            		// Need to handle exception
+            	} catch(InvalidKeySpecException e) {
+            		// Need to handle exception
+            	} catch(InvalidAlgorithmParameterException e) {
+            		// Need to handle exception
+            	} catch(InvalidKeyException e) {
+            		// Need to handle exception
+            	}
         	}
-        	
+
+        	alarmTime = DOFType.asDate(parameters.get(0));
             DOFBoolean myDOFBoolean = new DOFBoolean(isActive);
             
             if(delay > 0){
@@ -381,9 +295,8 @@ public class Provider {
                 }
             }
             
-            //request.respond(myDOFBoolean); // respond with another blob
-            //request.respond(BlobPubKey);
-            //lastOp = "invoke";
+            request.respond(myDOFBoolean); 
+            lastOp = "invoke";
         }
     }
 }

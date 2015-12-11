@@ -57,7 +57,7 @@ import org.opendof.core.oal.value.DOFDateTime;
 
 public class Requestor {
 
-    TrainingUI parent; // <-- comment this out when turning off the gui
+    TrainingUI parent;
     DOFSystem mySystem;
     Map<String, DOFObject> objectMap = new HashMap<String, DOFObject>(2);
     DOFObject broadcastObject = null;
@@ -73,13 +73,19 @@ public class Requestor {
     DOFOperation.Set activeSetOperation = null;
     DOFOperation.Invoke activeInvokeOperation = null;
     
+    // This cannot be defined here. DataTransform is not yet defined. -ls339
+    //private DataTransform dataTransform = ETE_DATA_TRANSFORM; //data transform vars
+    private SecretKey savedSecretKey;
+    private IvParameterSpec savedIVSpec;
+    private Cipher savedEncryptCipher;
+    private Cipher savedDecryptCipher; //end data transform var
+    
     
     int TIMEOUT = 5000;
     
-    public Requestor(DOFSystem _system, TrainingUI _parent){ // <-- comment this out when turning off the gui
-    //public Requestor(DOFSystem _system){
+    public Requestor(DOFSystem _system, TrainingUI _parent){ 
         mySystem = _system;
-        this.parent = _parent; // <-- comment this out when turning off the gui
+        this.parent = _parent; 
         init();
     }
     
@@ -117,19 +123,11 @@ public class Requestor {
     }
     
     public Boolean sendGetRequest() {
-        /* 
-         * Begin Secure end-to-end session
-    	 * SessionObject = currentProvider.beginSession(iface, sessionType) 
-         * public DOFOperation.Session beginSession(DOFInterface iface, DOFInterfaceID sessionType, int timeout, SessionOperationListener operationListener)
-         * { return oalObject.beginSession(iface, sessionType, timeout, operationListener); }
-         */
+    	
         try{
             DOFResult<DOFValue> myResult;
-            //DOFResult<DOFValue> otherResult;
             if(currentProvider != null)
             {
-            	// end-to-end
-            	//SessionObject = currentProvider.beginSession(TBAInterface.DEF, ETEInterface.IID, operationListener);
             	myResult = currentProvider.get(TBAInterface.PROPERTY_ALARM_ACTIVE, TIMEOUT);
                 return myResult.asBoolean();
             }
@@ -247,9 +245,9 @@ public class Requestor {
         return sharedSecret; 
    }
     
-    private Cipher savedEncryptCipher;//= DefaultDataTransform.createEncryptCipher(secKey, initializationVector);
-    
-    public final class DefaultDataTransform implements DOFOperation.Session.DataTransform 
+    // We cannot call this here, its being called before the class is defined - ls339
+    //public eteDataTransform ETE_DATA_TRANSFORM = new Requestor.eteDataTransform();
+    public final class eteDataTransform implements DOFOperation.Session.DataTransform 
     {
     	/**
     	 * Decrypts cipher.
@@ -292,7 +290,6 @@ public class Requestor {
         }
         public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)
         {
-        	// Need to get aesEncryptCipher from the DOFObject
         	Cipher aesEncryptCipher = savedEncryptCipher;
         	try 
         	{ 
@@ -304,63 +301,24 @@ public class Requestor {
         		return null;
         	}
         	
-        	//return new byte[0]; // Placeholder
         }
         @Override
         public byte[] transformReceiveData(DOFInterfaceID interfaceID, byte[] data)
         {
-        	// Need to get aesDecryptCipher from the DOFObject
-        	//Cipher aesDecryptCipher = savedDecryptCipher;
-        	//byte[] bytePlainData = aesDecryptCipher.doFinal(data);
-        	//return bytePlainData;
-        	return new byte[0]; // Placeholder
+        	Cipher aesDecryptCipher = savedDecryptCipher;
+        	try {
+        		byte[] bytePlainData = aesDecryptCipher.doFinal(data);
+            	return bytePlainData;
+        	} catch(BadPaddingException e) {
+        		return null;
+        	} catch(IllegalBlockSizeException e) {
+        		return null;
+        	}
         }
     } 
-
-    /*
-    @Override
-    public byte[] transformSendData(DOFInterfaceID interfaceID, byte[] data)  {
-    	//receiverSharedSecret generated outside this method
-    	//SecretKey sharedSecret = receiverSharedSecret;
-    	//------------------------------------------------------------------
-    	//use the cipher method to create the cipher and init AES encryption
-    	CipherOutputStream cos = useCipherOutputStream(ByteArrayOutputStream os, Cipher aesEncryptCipher);
-    	//TODO - doFinal not called with stream cipher?
-    	//byte[] byteCipherData = aesEncryptCipher.doFinal(data); //convert to cipher data
-    	//cos.write(byteCipherData); //write the cipher data to the cipher stream
-    	//------------------------------------------------------------------
-    	//now send the cipher text across the session (This occurs outside this method)
-    	//return byteCipherData; //what do we return?
-    	byte[] byteCipherData = cos.write(data);
-    	return byteCipherData;
-    }
-
-    public void sendBeginGetRequest() {
-    	activeGetOperation = broadcastObject.beginGet(TBAInterface.PROPERTY_ALARM_ACTIVE, TIMEOUT, new GetListener());
-    }
-    @Override
-    public transformReceiveData(DOFInterfaceID interfaceID, byte[] data) 
-    {
-    	//receiverSharedSecret generated outside this method
-    	//SecretKey sharedSecret = receiverSharedSecret;
-    	//------------------------------------------------------------------
-    	//use the cipher method to create the cipher and init AES encryption
-    	CipherInputStream cis = useCipherInputStream(ByteArrayInputStream os, Cipher aesDecryptCipher);
-    	//TODO - doFinal not called with stream Cipher??
-    	//byte[] bytePlainData = aesDecryptCipher.doFinal(data); //convert cipher data to plain data
-    	//cis.read(bytePlainData); //use the cipher stream to read the data
-    	//------------------------------------------------------------------
-    	//now send the decrypted data back to application (find out where this occurs)
-    	//return bytePlainData;
-    	byte[] bytePlainData = cis.read(data);
-    	return bytePlainData;
-    }
-    */
-    
+ 
     public void sendBeginSetRequest(boolean _active) {
     	DOFBoolean setValue = new DOFBoolean(_active);
-    	//SessionObject = broadcastObject.beginSession(TBAInterface.DEF, ETEInterface.IID, sessionListener);
-    	//SessionObject.setDataTransform(new DefaultDataTransform());
     	activeSetOperation = broadcastObject.beginSet(TBAInterface.PROPERTY_ALARM_ACTIVE, setValue, TIMEOUT, new SetListener()); 
             
                
@@ -372,25 +330,16 @@ public class Requestor {
             parameters.add(alarmTimeParameter);
             activeInvokeOperation = broadcastObject.beginInvoke(TBAInterface.METHOD_SET_NEW_TIME, parameters, TIMEOUT, new InvokeListener());
     }
-    /*
-    public void sendBeginInvokeRequest(Date _alarmTime) {
-    	List<DOFValue> parameters = new ArrayList<DOFValue>();
-            DOFDateTime alarmTimeParameter = new DOFDateTime(_alarmTime);
-            parameters.add(alarmTimeParameter);
-            
-            activeInvokeOperation = broadcastObject.beginInvoke(TBAInterface.METHOD_SET_NEW_TIME, parameters, TIMEOUT, new InvokeListener());
-    }
-     */
     
     private class SessionListener implements DOFObject.SessionOperationListener
     {
     	@Override
     	public void complete(DOFOperation operation, DOFException exception) {
-    		
+  		// End session here
     	}
     	@Override
     	public void sessionOpen(DOFOperation.Session operation, DOFProviderInfo providerInfo, DOFObject session, DOFException exception) {
-    		
+    	// Start session here 
     	}
     }
     
