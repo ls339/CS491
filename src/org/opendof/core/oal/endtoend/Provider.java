@@ -51,10 +51,10 @@ public class Provider {
     Date alarmTime;
     
     private DataTransform dataTransform = ETE_DATA_TRANSFORM; //data transform vars
-    private SecretKey secKey;
-    private IvParameterSpec initializationVector;
+    private SecretKey savedSecretKey;
+    private IvParameterSpec savedIVSpec;
     private Cipher savedEncryptCipher;
-    private Cipher savedDecryptCipher; //end data transform vars
+    private Cipher savedDecryptCipher; //end data transform var
     
     public Provider(DOFSystem _system, String oidString){
         mySystem = _system;
@@ -213,6 +213,7 @@ public class Provider {
     		throws InvalidKeyException {   
     	myKeyAgreement.doPhase(pubKey, true);
         byte[] sharedSecret = myKeyAgreement.generateSecret();
+        savedSecretKey = new SecretKeySpec(sharedSecret, "AES/CBC/PKCS5Padding");
         return sharedSecret; 
    }
     //begin data transform
